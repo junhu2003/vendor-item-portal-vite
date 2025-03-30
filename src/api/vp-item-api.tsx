@@ -30,7 +30,7 @@ export async function GetVpUserByEmail(email: string): Promise<Users | null> {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         }});
-    if (!response.ok && response.status === 200) {
+    if (response.ok && response.status === 200) {
         return response.json();
     } else {
         return null;
