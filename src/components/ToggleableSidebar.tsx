@@ -14,7 +14,8 @@ import { ToggleableSidebarProps } from '../types/components/ToggleableSidebarTyp
 
 
 
-const ToggleableSidebar: React.FC<ToggleableSidebarProps> = ({ adjustSidebarSpace }) => {
+const ToggleableSidebar: React.FC<ToggleableSidebarProps> = ({ 
+  adjustSidebarSpace, adjustPageTitle }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const location = useLocation();
   const { logout, user } = useAuth();
@@ -32,9 +33,9 @@ const ToggleableSidebar: React.FC<ToggleableSidebarProps> = ({ adjustSidebarSpac
       label: 'Profile' 
     },
     { 
-      path: '/settings', 
+      path: '/admins', 
       icon: <CogIcon className="w-5 h-5" />, 
-      label: 'Settings' 
+      label: 'Admins' 
     }
   ];
 
@@ -92,6 +93,7 @@ const ToggleableSidebar: React.FC<ToggleableSidebarProps> = ({ adjustSidebarSpac
                     }
                     ${isExpanded ? 'justify-start' : 'justify-center'}
                   `}
+                  onClick={() => { adjustPageTitle(item.label); }}
                 >
                   <div className={isExpanded ? 'mr-3' : ''}>
                     {item.icon}
