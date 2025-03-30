@@ -72,8 +72,8 @@ const ToggleableSidebar: React.FC<ToggleableSidebarProps> = ({ adjustSidebarSpac
         {/* User Info */}
         {isExpanded && user && (
           <div className="mb-6 text-center">
-            <h2 className="text-xl text-gray-400 font-semibold truncate">{user.name}</h2>
-            <p className="text-sm text-gray-400 truncate">{user.email}</p>
+            <h2 className="text-xl text-gray-400 font-semibold truncate">{user.Name}</h2>
+            <p className="text-sm text-gray-400 truncate">{user.Email}</p>
           </div>
         )}
 
