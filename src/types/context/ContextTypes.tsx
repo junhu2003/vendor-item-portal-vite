@@ -1,13 +1,8 @@
-// User interface
-export interface User {
-    id: string;
-    name: string;
-    email: string;
-  }
+import { Users } from '../vpadmin/vpAdminTypes';
   
   // Authentication context interface
 export interface AuthContextType {
-    user: User | null;
+    user: Users | null;
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => void;
     isAuthenticated: boolean;

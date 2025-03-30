@@ -1,6 +1,9 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { User, AuthContextType } from '../types/context/ContextTypes'; // Adjust the import path as necessary
+import { AuthContextType } from '../types/context/ContextTypes';
+import bcryptjs from 'bcryptjs';
+import { Users } from '../types/vpadmin/vpAdminTypes';
+import { GetVpUserByEmail } from '../api/vp-item-api';
 
 
 // Create context
@@ -8,26 +11,25 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Authentication Provider
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<Users | null>(null);
   const navigate = useNavigate();
 
   // Simulated login (replace with actual API call)
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Mock authentication logic
-    if (email === 'user@example.com' && password === 'password') {
-      const mockUser = {
-        id: '1',
-        name: 'John Doe',
-        email: email
-      };
-      
-      setUser(mockUser);
-      localStorage.setItem('user', JSON.stringify(mockUser));
+    // Fetch users from API
+    const users: Users | null = await GetVpUserByEmail(email);    
+    if (!users) return false;
+
+    const passwordsMatch = await bcryptjs.compare(password, users.Password);
+    if (passwordsMatch) {
+      setUser(users);
+      localStorage.setItem('user', JSON.stringify(users));
       localStorage.setItem('token', 'mock-jwt-token');
       
       navigate('/dashboard');
       return true;
     }
+
     return false;
   };
 
