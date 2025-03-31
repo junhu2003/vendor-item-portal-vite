@@ -1,10 +1,10 @@
 
 export type Users = {
-    UserID: string,
+    UserID?: string,
 	Name: string,
 	Email: string,
 	Password: string,
-	UserLevelID: number,
+	UserLevelID: string,
 	IsNewUser: boolean,
   };
 

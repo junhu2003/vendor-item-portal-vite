@@ -54,7 +54,7 @@ const ToggleableSidebar: React.FC<ToggleableSidebarProps> = ({
         fixed left-0 top-0 h-full bg-white text-white 
         transition-all duration-300 ease-in-out
         ${isExpanded ? 'w-64' : 'w-20'}
-        shadow-lg z-50
+        shadow-lg z-0
       `}
     >
       {/* Sidebar Toggle Button */}      
