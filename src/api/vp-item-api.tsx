@@ -8,7 +8,7 @@ import bcryptjs from 'bcryptjs';
 
 const apiBaseUrl = import.meta.env.VITE_API_URL;
 
-export async function GetAllVpUsers(): Promise<Users[] | null> {
+export async function GetAllVpUsers(): Promise<Users[]> {
     var reqUrl = apiBaseUrl + '/api/VpItem/v1/GetAllVpUsers'    
     const response = await fetch(reqUrl, { 
         method: 'GET', 
@@ -21,7 +21,7 @@ export async function GetAllVpUsers(): Promise<Users[] | null> {
     if (response.ok && response.status === 200) {
         return response.json();
     } else {
-        return null;
+        return [];
     }
 }
 
@@ -42,7 +42,7 @@ export async function GetVpUserByEmail(email: string): Promise<Users | null> {
     }
 }
 
-export async function UpdateVpUser(user: Users): Promise<number | null> {
+export async function UpdateVpUser(user: Users[]): Promise<boolean> {
     var reqUrl = apiBaseUrl + '/api/VpItem/v1/UpdateVpUser';  
     const response = await fetch(reqUrl, { 
         method: 'POST', 
@@ -56,11 +56,11 @@ export async function UpdateVpUser(user: Users): Promise<number | null> {
     if (response.ok && response.status === 200) {
         return response.json();
     } else {
-        return null;
+        return false;
     }
 }
 
-export async function CreateVpUser(user: Users): Promise<number | null> {
+export async function CreateVpUser(user: Users): Promise<boolean> {
     var reqUrl = apiBaseUrl + '/api/VpItem/v1/CreateVpUser';  
     const newUser: Users = {
         UserID: undefined,
@@ -82,12 +82,82 @@ export async function CreateVpUser(user: Users): Promise<number | null> {
     if (response.ok && response.status === 200) {
         return response.json();
     } else {
-        return null;
+        return false;
     }
 }
 
 export async function DeleteVpUser(userID: string): Promise<number> {
     var reqUrl = apiBaseUrl + '/api/VpItem/v1/DeleteVpUser?userID=' + userID;  
+    const response = await fetch(reqUrl, { 
+        method: 'DELETE', 
+        credentials: 'include', 
+        mode: 'cors', 
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }});
+    if (response.ok && response.status === 200) {
+        return (Number)(await response.text());
+    } else {
+        return 0;
+    }
+}
+
+export async function GetAllStores(): Promise<Store[]> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/GetAllStores'    
+    const response = await fetch(reqUrl, { 
+        method: 'GET', 
+        credentials: 'include', 
+        mode: 'cors', 
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }});
+    if (response.ok && response.status === 200) {
+        return response.json();
+    } else {
+        return [];
+    }
+}
+
+export async function UpdateStores(stores: Store[]): Promise<boolean> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/UpdateStores';  
+    const response = await fetch(reqUrl, { 
+        method: 'POST', 
+        credentials: 'include', 
+        mode: 'cors', 
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }, 
+        body: JSON.stringify(stores)});
+    if (response.ok && response.status === 200) {
+        return response.json();
+    } else {
+        return false;
+    }
+}
+
+export async function CreateStore(store: Store): Promise<boolean> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/CreateStore';    
+    const response = await fetch(reqUrl, { 
+        method: 'POST', 
+        credentials: 'include', 
+        mode: 'cors', 
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }, 
+        body: JSON.stringify(store)});
+    if (response.ok && response.status === 200) {
+        return response.json();
+    } else {
+        return false;
+    }
+}
+
+export async function DeleteStore(storeID: number): Promise<number> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/DeleteStore?storeID=' + storeID;  
     const response = await fetch(reqUrl, { 
         method: 'DELETE', 
         credentials: 'include', 

@@ -40,7 +40,7 @@ useEffect(() => {
     const userLevelData: UserLevel[] = await GetAllVpUserLevels();
     let userLevelList: { label: string, value: string }[] 
       = userLevelData.map((c) => ({
-          value: c.ID.toString(),
+          value: c.UserLevelID.toString(),
           label: c.Name,
         }));
     setUserLevels(userLevelList);      

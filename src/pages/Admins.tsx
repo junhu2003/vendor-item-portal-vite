@@ -5,6 +5,7 @@ import {
   CableIcon,   
 } from 'lucide-react';
 import UserMantineTable from '../components/UserMantineTable';
+import StoreMantineTable from '../components/StoreMantineTable';
 
 const Admins: React.FC = () => {
   const [activeTab, setActiveTab] = useState('user');
@@ -15,7 +16,7 @@ const Admins: React.FC = () => {
   };
 
   return (
-    <div className="w-[75%] m-3">
+    <div className="w-[80%] m-3">
       <div className="border-b border-gray-200 dark:border-gray-700">
         <ul className="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
           <li className="me-2">
@@ -70,28 +71,7 @@ const Admins: React.FC = () => {
         
         {activeTab === 'store' && (
           <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Store Information</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Store Name</label>
-                <input 
-                  type="text" 
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
-                  placeholder="My Awesome Store"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Store Location</label>
-                <input 
-                  type="text" 
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border"
-                  placeholder="123 Main St"
-                />
-              </div>
-              <button className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded">
-                Update Store
-              </button>
-            </div>
+            <StoreMantineTable />
           </div>
         )}
         

@@ -1,0 +1,364 @@
+import React, { useMemo, useState } from 'react';
+import {
+  MantineReactTable,
+  // createRow,
+  type MRT_ColumnDef,
+  type MRT_Row,
+  type MRT_TableOptions,
+  useMantineReactTable,
+} from 'mantine-react-table';
+import {  
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
+import { ActionIcon, Button, Text, Tooltip } from '@mantine/core';
+import {modals } from '@mantine/modals';
+import { IconTrash } from '@tabler/icons-react';
+import { Store } from '../types/vpadmin/vpAdminTypes';
+import {   
+  CreateStore,
+  UpdateStores,
+  DeleteStore,
+  GetAllStores,
+  } from '../api/vp-item-api';
+
+const StoreMantineTable: React.FC = () => {
+  const [validationErrors, setValidationErrors] = useState<
+  Record<string, string | undefined>
+>({});
+//keep track of rows that have been edited
+const [editedStores, setEditedStores] = useState<Record<string, Store>>({});
+
+//call CREATE hook
+const { mutateAsync: createStore, isPending: isCreatingStore } =
+  useCreateStore();
+//call READ hook
+const {
+  data: fetchedStores = [],
+  isError: isLoadingStoresError,
+  isFetching: isFetchingStores,
+  isLoading: isLoadingStores,
+} = useGetStores();
+//call UPDATE hook
+const { mutateAsync: updateStores, isPending: isUpdatingStore } =
+  useUpdateUsers();
+//call DELETE hook
+const { mutateAsync: deleteStore, isPending: isDeletingStore } =
+  useDeleteStore();
+
+//CREATE action
+const handleCreateStore: MRT_TableOptions<Store>['onCreatingRowSave'] = async ({
+  values,
+  exitCreatingMode,
+}) => {
+  const newValidationErrors = validateStore(values);
+  if (Object.values(newValidationErrors).some((error) => !!error)) {
+    setValidationErrors(newValidationErrors);
+    return;
+  }
+  setValidationErrors({});
+  await createStore(values);
+  exitCreatingMode();
+};
+
+//UPDATE action
+const handleSaveStores = async () => {
+  if (Object.values(validationErrors).some((error) => !!error)) return;
+  await updateStores(Object.values(editedStores));
+  setEditedStores({});
+};
+
+//DELETE action
+const openDeleteConfirmModal = (row: MRT_Row<Store>) =>
+  modals.openConfirmModal({
+    title: 'Are you sure you want to delete this store?',
+    children: (
+      <Text>
+        Are you sure you want to delete {row.original.StoreName}{' '}?
+         This action cannot be undone.
+      </Text>
+    ),
+    labels: { confirm: 'Delete', cancel: 'Cancel' },
+    confirmProps: { color: 'red' },
+    onConfirm: () => deleteStore(row.original.StoreID),
+  });
+
+const columns = useMemo<MRT_ColumnDef<Store>[]>(    
+  () => [          
+    {
+      accessorKey: 'StoreName',
+      header: 'Store Name',
+      size: 300,
+      mantineEditTextInputProps: ({ cell, row }) => ({
+        type: 'text',
+        required: true,
+        error: validationErrors?.[cell.id],
+        //store edited user in state to be saved later
+        onBlur: (event) => {            
+          const validationError = !validateRequired(event.currentTarget.value)
+            ? 'Required'
+            : undefined;
+          setValidationErrors({
+            ...validationErrors,
+            [cell.id]: validationError,
+          });
+          setEditedStores({ 
+            ...editedStores,
+            [row.id]: { ...(editedStores[row.id] ? editedStores[row.id] : row.original), StoreName: event.currentTarget.value },
+          });
+        },
+      }),
+    },      
+    {
+      accessorKey: 'HeadOfficeName',
+      header: 'Head Office',
+      size: 300,
+      mantineEditTextInputProps: ({ cell, row }) => ({
+        type: 'text',
+        required: true,
+        error: validationErrors?.[cell.id],
+        //store edited user in state to be saved later
+        onBlur: (event) => {
+          const validationError = !validateRequired(event.currentTarget.value)
+            ? 'Required'
+            : undefined;
+          setValidationErrors({
+            ...validationErrors,
+            [cell.id]: validationError,
+          });
+          setEditedStores({ 
+            ...editedStores, 
+            [row.id]: { ...(editedStores[row.id] ? editedStores[row.id] : row.original), HeadOfficeName: event.currentTarget.value },
+          });
+        },
+      }),
+    },      
+    {
+      accessorKey: 'StoreToken',
+      header: 'Store Token',
+      size: 300,
+      mantineEditTextInputProps: ({ cell, row }) => ({
+        type: 'text',
+        required: true,
+        error: validationErrors?.[cell.id],
+        //store edited user in state to be saved later
+        onBlur: (event) => {
+          const validationError = !validateRequired(event.currentTarget.value)
+            ? 'Required'
+            : undefined;
+          setValidationErrors({
+            ...validationErrors,
+            [cell.id]: validationError,
+          });
+          setEditedStores({ 
+            ...editedStores, 
+            [row.id]: { ...(editedStores[row.id] ? editedStores[row.id] : row.original), StoreToken: event.currentTarget.value },
+          });
+        },
+      }),
+    },      
+    {
+      accessorKey: 'HeadOfficeToken',
+      header: 'Head Office Token',
+      size: 300,
+      mantineEditTextInputProps: ({ cell, row }) => ({
+        type: 'text',
+        required: true,
+        error: validationErrors?.[cell.id],
+        //store edited user in state to be saved later
+        onBlur: (event) => {
+          const validationError = !validateRequired(event.currentTarget.value)
+            ? 'Required'
+            : undefined;
+          setValidationErrors({
+            ...validationErrors,
+            [cell.id]: validationError,
+          });
+          setEditedStores({ 
+            ...editedStores, 
+            [row.id]: { ...(editedStores[row.id] ? editedStores[row.id] : row.original), HeadOfficeToken: event.currentTarget.value },
+          });
+        },
+      }),
+    },      
+  ],
+  [editedStores, validationErrors],
+);
+
+const table = useMantineReactTable(
+  {
+    columns,
+    data: fetchedStores,
+    createDisplayMode: 'row', // ('modal', and 'custom' are also available)
+    editDisplayMode: 'table', // ('modal', 'row', 'cell', and 'custom' are also available)
+    enableEditing: true,
+    enableRowActions: true,
+    positionActionsColumn: 'last',
+    getRowId: (row) => row.StoreID,
+    mantineToolbarAlertBannerProps: isLoadingStoresError
+      ? {
+          color: 'red',
+          children: 'Error loading data',
+        }
+      : undefined,
+    mantineTableContainerProps: {
+      sx: {
+        minHeight: '500px',
+      },
+    },
+    onCreatingRowCancel: () => setValidationErrors({}),
+    onCreatingRowSave: handleCreateStore,
+    renderRowActions: ({ row }) => (
+      <Tooltip label="Delete">
+        <ActionIcon style={{background: 'transparent'}} onClick={() => openDeleteConfirmModal(row)}>
+          <IconTrash color='red' />
+        </ActionIcon>
+      </Tooltip>
+    ),
+    renderBottomToolbarCustomActions: () => (
+      <Button
+        color="blue"
+        onClick={handleSaveStores}
+        disabled={
+          Object.keys(editedStores).length === 0 ||
+          Object.values(validationErrors).some((error) => !!error)
+        }
+        loading={isUpdatingStore}
+      >
+        Save
+      </Button>
+    ),
+    renderTopToolbarCustomActions: ({ table }) => (
+      <Button
+        onClick={() => {
+          table.setCreatingRow(true); //simplest way to open the create row modal with no default values
+          //or you can pass in a row object to set default values with the `createRow` helper function
+          // table.setCreatingRow(
+          //   createRow(table, {
+          //     //optionally pass in default values for the new row, useful for nested data or other complex scenarios
+          //   }),
+          // );
+        }}
+      >
+        Create New Store
+      </Button>
+    ),
+    state: {
+      isLoading: isLoadingStores,
+      isSaving: isCreatingStore || isUpdatingStore || isDeletingStore,
+      showAlertBanner: isLoadingStoresError,
+      showProgressBars: isFetchingStores,
+    },
+  });
+
+  return <MantineReactTable table={table} />;
+};
+
+//CREATE hook (post new user to api)
+function useCreateStore() {
+const queryClient = useQueryClient();
+return useMutation({
+  mutationFn: async (store: Store) => {
+    //send api create request here
+    const result = await CreateStore(store);
+    return result;    
+  },
+  //client side optimistic update
+  onMutate: (newStoreInfo: Store) => {
+    queryClient.setQueryData(
+      ['stores'],
+      (prevUsers: any) =>
+        [
+          ...prevUsers,
+          {
+            ...newStoreInfo,
+            id: (Math.random() + 1).toString(36).substring(7),
+          },
+        ] as Store[],
+    );
+  },
+  onSettled: () => queryClient.invalidateQueries({ queryKey: ['stores'] }), //refetch users after mutation, disabled for demo
+});
+}
+
+//READ hook (get users from api)
+function useGetStores() {
+return useQuery<Store[]>({
+  queryKey: ['stores'],
+  queryFn: async () => {
+    //send api request here
+    const stores = await GetAllStores();    
+    return stores;
+
+  },
+  refetchOnWindowFocus: false,
+});
+}
+
+//UPDATE hook (put users in api)
+function useUpdateUsers() {
+const queryClient = useQueryClient();
+return useMutation({
+  mutationFn: async (stores: Store[]) => {
+    //send api update request here
+    const result = await UpdateStores(stores);
+    return result;
+  },
+  //client side optimistic update
+  onMutate: (newStores: Store[]) => {
+    queryClient.setQueryData(
+      ['stores'],
+      (prevStores: any) =>
+        prevStores?.map((store: Store) => {
+          const newStore = newStores.find((u) => u.StoreID === store.StoreID);
+          return newStore ? newStore : store;
+        }),
+    );
+  },
+  onSettled: () => queryClient.invalidateQueries({ queryKey: ['stores'] }), //refetch stores after mutation, disabled for demo
+});
+}
+
+//DELETE hook (delete store in api)
+function useDeleteStore() {
+const queryClient = useQueryClient();
+return useMutation({
+  mutationFn: async (storeId: number) => {
+    //send api update request here
+    const result = await DeleteStore(storeId);
+    return result;    
+  },
+  //client side optimistic update
+  onMutate: (storeId: number) => {
+    queryClient.setQueryData(
+      ['stores'],
+      (prevStores: any) =>
+        prevStores?.filter((store: Store) => store.StoreID !== storeId),
+    );
+  },
+  onSettled: () => queryClient.invalidateQueries({ queryKey: ['stores'] }), //refetch stores after mutation, disabled for demo
+});
+}
+
+const validateRequired = (value: string) => !!value?.length;
+const validateEmail = (email: string) =>
+!!email.length &&
+email
+  .toLowerCase()
+  .match(
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+  );
+
+function validateStore(store: Store) {
+return {
+  StoreName: !validateRequired(store.StoreName)
+    ? 'Store Name is Required'
+    : '',    
+    HeadOfficeToken: !validateRequired(store.HeadOfficeToken)
+    ? 'Head Office Token is Required'
+    : '',    
+};
+}
+
+export default StoreMantineTable;  

@@ -9,7 +9,7 @@ export type Users = {
   };
 
 export type UserLevel = {
-    ID: number,
+    UserLevelID: number,
     Name: string,
 };
 
