@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import UserMantineTable from '../components/UserMantineTable';
 import StoreMantineTable from '../components/StoreMantineTable';
+import UserStoreRelationMantineTable from '../components/UserStoreRelationMantineTable';
 
 const Admins: React.FC = () => {
   const [activeTab, setActiveTab] = useState('user');
@@ -77,29 +78,7 @@ const Admins: React.FC = () => {
         
         {activeTab === 'userStore' && (
           <div>
-            <h3 className="text-lg font-medium text-gray-900 mb-4">User & Store Connection</h3>
-            <div className="space-y-4">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="font-medium text-gray-800">Connection Status</h4>
-                <p className="text-gray-600">User is connected to 2 stores</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">User Role</label>
-                <select className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border">
-                  <option>Admin</option>
-                  <option>Manager</option>
-                  <option>Staff</option>
-                </select>
-              </div>
-              <div className="flex space-x-2">
-                <button className="bg-purple-500 hover:bg-purple-600 text-white py-2 px-4 rounded flex-1">
-                  Connect
-                </button>
-                <button className="bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded flex-1">
-                  Disconnect
-                </button>
-              </div>
-            </div>
+            <UserStoreRelationMantineTable />
           </div>
         )}
       </div>

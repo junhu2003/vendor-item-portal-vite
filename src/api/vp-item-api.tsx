@@ -173,6 +173,76 @@ export async function DeleteStore(storeID: number): Promise<number> {
     }
 }
 
+export async function GetAllUserStoreRelations(): Promise<UserStoreRelation[]> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/GetAllUserStoreRelations'    
+    const response = await fetch(reqUrl, { 
+        method: 'GET', 
+        credentials: 'include', 
+        mode: 'cors', 
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }});
+    if (response.ok && response.status === 200) {
+        return response.json();
+    } else {
+        return [];
+    }
+}
+
+export async function UpdateUserStoreRelations(relations: UserStoreRelation[]): Promise<boolean> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/UpdateUserStoreRelations';  
+    const response = await fetch(reqUrl, { 
+        method: 'POST', 
+        credentials: 'include', 
+        mode: 'cors', 
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }, 
+        body: JSON.stringify(relations)});
+    if (response.ok && response.status === 200) {
+        return response.json();
+    } else {
+        return false;
+    }
+}
+
+export async function CreateUserStoreRelation(relation: UserStoreRelation): Promise<boolean> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/CreateUserStoreRelation';    
+    const response = await fetch(reqUrl, { 
+        method: 'POST', 
+        credentials: 'include', 
+        mode: 'cors', 
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }, 
+        body: JSON.stringify(relation)});
+    if (response.ok && response.status === 200) {
+        return response.json();
+    } else {
+        return false;
+    }
+}
+
+export async function DeleteUserStoreRelation(relationID: number): Promise<number> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/DeleteUserStoreRelation?relationID=' + relationID;  
+    const response = await fetch(reqUrl, { 
+        method: 'DELETE', 
+        credentials: 'include', 
+        mode: 'cors', 
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }});
+    if (response.ok && response.status === 200) {
+        return (Number)(await response.text());
+    } else {
+        return 0;
+    }
+}
+
 export async function GetAllVpUserLevels(): Promise<UserLevel[]> {
     var reqUrl = apiBaseUrl + '/api/VpItem/v1/GetAllVpUserLevels'    
     const response = await fetch(reqUrl, { 

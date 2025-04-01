@@ -1,6 +1,6 @@
 
 export type Users = {
-    UserID?: string,
+    UserID: string,
 	Name: string,
 	Email: string,
 	Password: string,
@@ -22,8 +22,9 @@ export type Store = {
 };
 
 export type UserStoreRelation = {
+    RelationID: number;
     UserID: string,
-	StoreID: number,
+	StoreID: string,
 };
 
 export type item = {

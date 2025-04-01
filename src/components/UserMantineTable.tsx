@@ -282,7 +282,6 @@ return useQuery<Users[]>({
       IsNewUser: user.IsNewUser,
     }));
     return users ? users : [];
-
   },
   refetchOnWindowFocus: false,
 });
