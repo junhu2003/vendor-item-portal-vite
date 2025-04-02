@@ -1,3 +1,4 @@
+import { ExtItemResponse } from '../types/sditem/sdItemTypes';
 import { Users, 
     UserLevel, 
     Store, 
@@ -260,8 +261,8 @@ export async function GetAllVpUserLevels(): Promise<UserLevel[]> {
     }
 }
 
-export async function GetVpItems(): Promise<item[]> {
-    var reqUrl = apiBaseUrl + '/api/VpItem/v1/GetVpItems'    
+export async function GetVpItems(publicKey: string, userIds: string): Promise<item[]> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/GetVpItems?publicKey=' + publicKey + '&userIds=' + userIds;    
     const response = await fetch(reqUrl, { 
         method: 'GET', 
         credentials: 'include', 
@@ -277,8 +278,8 @@ export async function GetVpItems(): Promise<item[]> {
     }
 }
 
-export async function CreateVpItems(items: item[]): Promise<boolean | null> {
-    var reqUrl = apiBaseUrl + '/api/VpItem/v1/CreateVpItems'    
+export async function CreateVpItem(item: item): Promise<boolean> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/CreateVpItem'    
     const response = await fetch(reqUrl, { 
         method: 'POST', 
         credentials: 'include', 
@@ -287,15 +288,15 @@ export async function CreateVpItems(items: item[]): Promise<boolean | null> {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         }, 
-        body: JSON.stringify(items)});
+        body: JSON.stringify(item)});
     if (response.ok && response.status === 200) {
         return response.json();
     } else {
-        return null;
+        return false;
     }
 }
 
-export async function UpdateVpItems(items: item[]): Promise<boolean | null> {
+export async function UpdateVpItems(items: item[]): Promise<boolean> {
     var reqUrl = apiBaseUrl + '/api/VpItem/v1/UpdateVpItems'    
     const response = await fetch(reqUrl, { 
         method: 'POST', 
@@ -309,29 +310,28 @@ export async function UpdateVpItems(items: item[]): Promise<boolean | null> {
     if (response.ok && response.status === 200) {
         return response.json();
     } else {
-        return null;
+        return false;
     }
 }
 
-export async function DeleteVpItems(items: item[]): Promise<boolean | null> {
-    var reqUrl = apiBaseUrl + '/api/VpItem/v1/DeleteVpItems'    
+export async function DeleteVpItem(itemID: number): Promise<boolean> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/DeleteVpItems?itemID=' + itemID;    
     const response = await fetch(reqUrl, { 
-        method: 'POST', 
+        method: 'DELETE', 
         credentials: 'include', 
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
-        }, 
-        body: JSON.stringify(items)});
+        }});
     if (response.ok && response.status === 200) {
         return response.json();
     } else {
-        return null;
+        return false;
     }
 }
 
-export async function GetSendItemHistories(): Promise<SendItemHistory[] | null> {
+export async function GetSendItemHistories(): Promise<SendItemHistory[]> {
     var reqUrl = apiBaseUrl + '/api/VpItem/v1/GetSendItemHistories'    
     const response = await fetch(reqUrl, { 
         method: 'POST', 
@@ -344,11 +344,11 @@ export async function GetSendItemHistories(): Promise<SendItemHistory[] | null> 
     if (response.ok && response.status === 200) {
         return response.json();
     } else {
-        return null;
+        return [];
     }
 }
 
-export async function CreateSendItemHistory(sendItemHistory: SendItemHistory[]): Promise<boolean | null> {
+export async function CreateSendItemHistory(sendItemHistory: SendItemHistory[]): Promise<boolean> {
     var reqUrl = apiBaseUrl + '/api/VpItem/v1/CreateSendItemHistory'    
     const response = await fetch(reqUrl, { 
         method: 'POST', 
@@ -362,6 +362,24 @@ export async function CreateSendItemHistory(sendItemHistory: SendItemHistory[]):
     if (response.ok && response.status === 200) {
         return response.json();
     } else {
-        return null;
+        return false;
+    }
+}
+
+export async function UpdateItemByResponse(res: ExtItemResponse): Promise<boolean> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/UpdateItemByResponse'    
+    const response = await fetch(reqUrl, { 
+        method: 'POST', 
+        credentials: 'include', 
+        mode: 'cors', 
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }, 
+        body: JSON.stringify(res)});
+    if (response.ok && response.status === 200) {
+        return response.json();
+    } else {
+        return false;
     }
 }

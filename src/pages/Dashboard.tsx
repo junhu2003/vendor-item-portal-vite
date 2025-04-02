@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import {useAuth} from '../context/AuthContext';
+import VpItemMantineTable from '../components/VpItemMantineTable';
 
 const Dashboard: React.FC = () => {
     const { user } = useAuth();
   
     return (
-      <div>
-        <h1 className="text-3xl font-bold mb-6">Dashboard</h1>
-        <p>Welcome, {user?.Name}!</p>
+      <div className="w-full p-3">
+        <VpItemMantineTable />
       </div>
     );
   };

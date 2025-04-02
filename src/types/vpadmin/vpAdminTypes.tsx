@@ -29,17 +29,17 @@ export type UserStoreRelation = {
 
 export type item = {
     ItemID: number,
-    DepartmentID: number,
-    CategoryID: number,
+    DepartmentID: string,
+    CategoryID: string,
     ItemName: string,
     ItemDesc: string,
     ItemNumber?: string,
-    TaxCodeID: number,
+    TaxCodeID: string,
     UnitPrice: number,
     UnitCost: number,
     STS: string,
     ItemType: string,
-    BrandID: number,
+    BrandID: string,
     Barcode: string,
     ReportCode?: string,
     ImageFileName?: string,
@@ -69,3 +69,8 @@ export type SendItemHistory = {
 	SendUserID?: string,
 	SendDate: Date,
 };
+
+export type SendItemStatus = {
+    id: number;
+    status: string;
+}
