@@ -17,10 +17,9 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
-import { DeptCategories, ExtItems, ExtItemResponse } from '../types/sditem/sdItemTypes'; 
-import { item, SendItemHistory, SendItemStatus } from '../types/vpadmin/vpAdminTypes';
-import { 
-  
+import { DeptCategories, ExtItemResponse } from '../types/sditem/sdItemTypes'; 
+import { item, ExtItems } from '../types/vpadmin/vpAdminTypes';
+import {
   getDeptLabels, 
   getCategoryLabels, 
   getTaxCodeLabels, 
@@ -40,11 +39,9 @@ import {
   GetVpItems,
   CreateVpItems,
   UpdateVpItems,
-  DeleteVpItem,
-  GetSendItemHistories,
-  CreateSendItemHistory, 
-  UpdateItemByResponse,
+  DeleteVpItem,  
 } from '../api/vp-item-api';
+import Toast from './Toast';
 
 const currentToken = '563449A5511C45FBAD060D310088AD2E';
 
@@ -56,8 +53,10 @@ const VpItemMantineTable: React.FC = () => {
 
   const queryClient = useQueryClient();
 
-  //keep track of rows that have been edited
+  const [toast, setToast] = useState<React.ReactElement | null>(null);
   //const [currentToken, setCurrentToken] = useState('');
+
+  //keep track of rows that have been edited  
   const [editedItems, setEditedItems] = useState<Record<string, item>>({});  
 
   const [depts, setDepts] = useState<{ label: string, value: string }[]>([]);
@@ -221,32 +220,56 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
 
     extItem.LastSendDate = extItem.LastSendDate ? new Date(extItem.LastSendDate) : undefined;
     const extItems: ExtItems = {
-      PublicKey: '563449A5511C45FBAD060D310088AD2E',
-      ExtItems: [extItem]
+      PublicKey: currentToken,
+      ExtItems: [{
+        ItemID: extItem.ItemID,
+        DepartmentID: Number(extItem.DepartmentID),
+        CategoryID: Number(extItem.CategoryID),
+        ItemName: extItem.ItemName,
+        ItemDesc: extItem.ItemDesc,
+        ItemNumber: extItem.ItemNumber,
+        TaxCodeID: Number(extItem.TaxCodeID),
+        UnitPrice: extItem.UnitPrice,
+        UnitCost: extItem.UnitCost,
+        STS: extItem.STS,
+        ItemType: extItem.ItemType,
+        BrandID: Number(extItem.BrandID),
+        Barcode: extItem.Barcode,
+        ReportCode: extItem.ReportCode,
+        ImageFileName: extItem.ImageFileName,
+        ImageFileData: extItem.ImageFileData,
+        ManualPrice: typeof(extItem.ManualPrice) === 'boolean' ? extItem.ManualPrice : false,
+        Discountable: typeof(extItem.Discountable) === 'boolean' ? extItem.ManualPrice : false,
+        Inventory: typeof(extItem.Inventory) === 'boolean' ? extItem.Inventory : false,
+        AvailableOnWeb: typeof(extItem.AvailableOnWeb) === 'boolean' ? extItem.AvailableOnWeb : false,
+        BtlDepositInPrice: typeof(extItem.BtlDepositInPrice) === 'boolean' ? extItem.BtlDepositInPrice : false,
+        BtlDepositInCost: typeof(extItem.BtlDepositInCost) === 'boolean' ? extItem.BtlDepositInCost : false,
+        EcoFeeInPrice: typeof(extItem.EcoFeeInPrice) === 'boolean' ? extItem.EcoFeeInPrice : false,
+        EcoFeeInCost: typeof(extItem.EcoFeeInCost) === 'boolean' ? extItem.EcoFeeInCost : false,
+        //SdItemID: extItem.SdItemID,
+        //LastAction: extItem.LastAction,
+        //LastSendDate: extItem.LastSendDate,
+        CreatedDate: new Date(), // extItem.CreatedDate,
+        CreateUserID: '410544B2-4001-4271-9855-FEC4B6A6442A', //extItem.CreateUserID
+      }]
     };
-    const responses: ExtItemResponse[] = await postItems(extItems);
+    const resresponses: ExtItemResponse[] = await postItems(extItems);
 
-    responses.forEach((res: ExtItemResponse) => {
-      new Promise(async (resolve) => {
-        
-        const result1 = await UpdateItemByResponse(res);
-
-        const history: SendItemHistory = {
-            ID: 0,
-            ExtItemID: res.ExtItemID,
-            Action: res.Action,
-            Status: res.Status,
-            ResponseMsg: res.Message,
-            SendUserID: '410544B2-4001-4271-9855-FEC4B6A6442A',
-            SendDate: res.SendDate,
-        };
-        
-        const result2 = await CreateSendItemHistory([history]);
-        resolve({result1, result2});
-      });
-    });
-
+    // refresh UI
     await queryClient.invalidateQueries(['items'])
+
+    resresponses.forEach(res => {
+      const status: "success" | "error" | "warning" | "info" = res.Status === 'Successed' ? 'success' : 'error';
+
+      setToast(
+        <Toast 
+          message={ res.Message }
+          type={ status } 
+          duration={3000} 
+          onClose={() => setToast(null)} 
+        />
+      );  
+    });
   }
 
   const columns = useMemo<MRT_ColumnDef<item>[]>(    
@@ -847,7 +870,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         minHeight: '500px',
       },
     },
-    mantineTableProps: {     
+    mantineTableProps: {
       className: 'custom-table',
     },
     onCreatingRowCancel: () => setValidationErrors({}),
@@ -903,11 +926,11 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
   });
 
   return (
-    <>      
-      <MantineReactTable table={table} />
-    </>
-    
-  );
+  <div>
+    {toast}
+    <MantineReactTable table={table} />    
+  </div>    
+);
 };
 
 //CREATE hook (post new item to api)
