@@ -1,4 +1,4 @@
-import { ExtItemResponse } from '../types/sditem/sdItemTypes';
+import { ExtItemResponse } from '../types/sditem/vpItemTypes';
 import { Users, 
     UserLevel, 
     Store, 
@@ -278,8 +278,8 @@ export async function GetVpItems(publicKey: string, userIds: string): Promise<it
     }
 }
 
-export async function CreateVpItem(item: item): Promise<boolean> {
-    var reqUrl = apiBaseUrl + '/api/VpItem/v1/CreateVpItem'    
+export async function CreateVpItems(items: item[]): Promise<boolean> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/CreateVpItems';
     const response = await fetch(reqUrl, { 
         method: 'POST', 
         credentials: 'include', 
@@ -288,7 +288,7 @@ export async function CreateVpItem(item: item): Promise<boolean> {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         }, 
-        body: JSON.stringify(item)});
+        body: JSON.stringify(items)});
     if (response.ok && response.status === 200) {
         return response.json();
     } else {
@@ -315,7 +315,7 @@ export async function UpdateVpItems(items: item[]): Promise<boolean> {
 }
 
 export async function DeleteVpItem(itemID: number): Promise<boolean> {
-    var reqUrl = apiBaseUrl + '/api/VpItem/v1/DeleteVpItems?itemID=' + itemID;    
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/DeleteVpItem?itemID=' + itemID;    
     const response = await fetch(reqUrl, { 
         method: 'DELETE', 
         credentials: 'include', 

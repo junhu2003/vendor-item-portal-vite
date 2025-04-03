@@ -58,44 +58,6 @@ export type DeptCategories = {
     Categories: { label: string, value: string }[]
 }
 
-export type Item = {
-    ItemID: number;
-    DepartmentID: number;
-    CategoryID: number;    
-    ItemName: string;
-    ItemDesc: string;
-    ItemNumber?: string;
-    TaxCodeID: number;    
-    UnitPrice: number;
-    UnitCost: number;
-    STS: string;
-    ItemType: string;    
-    BrandID: number;
-    BanualPrice: boolean;
-    Discountable: boolean;
-    Inventory: boolean;
-    AvailableOnWeb: boolean;
-    BtlDepositInPrice: boolean;
-	BtlDepositInCost: boolean;
-    EcoFeeInPrice: boolean;
-    EcoFeeInCost: boolean;	
-    Barcode?: string;
-	ReportCode: string;
-	ImageFileName?: string;
-	ImageFileData?: string;
-    SdItemID?: number;
-    LastAction?: string;
-    LastStatus?: string;
-    LastSendDate?: Date;
-    CreatedDate?: Date;
-    CreateUserID?: string;
-};
-
-export type ExtItems = {
-    PublicKey: string;
-    ExtItems: Item[]; 
-}
-
 export type ExtItemResponse = {
     ExtItemID: number;
     SdItemID: number;
@@ -104,4 +66,3 @@ export type ExtItemResponse = {
     Status: string;
     SendDate: Date;
 }
-

@@ -191,6 +191,9 @@ const table = useMantineReactTable(
         minHeight: '500px',
       },
     },
+    mantineTableProps: {     
+      className: 'custom-table',
+    },
     onCreatingRowCancel: () => setValidationErrors({}),
     onCreatingRowSave: handleCreateUser,
     renderRowActions: ({ row }) => (

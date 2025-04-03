@@ -74,3 +74,10 @@ export type SendItemStatus = {
     id: number;
     status: string;
 }
+
+export type ExtItems = {
+    PublicKey: string;
+    ExtItems: item[]; 
+}
+
+

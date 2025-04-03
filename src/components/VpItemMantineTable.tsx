@@ -27,15 +27,18 @@ import {
   getBrandLabels,
   getReportCodeLabels,
   getItemTypeLabels,
-  getItemStatusLabels,  
-  postItemsToSD,  
-  checkBarcodeDuplication,
-  checkItemNumberDuplication,
+  getItemStatusLabels,
 } from '../api/sd-item-api-helper';
+
+import {
+  barcodesDuplicationCheck,
+  itemNumberDuplicationCheck,
+  postItems,
+} from '../api/sd-item-api';
 
 import { 
   GetVpItems,
-  CreateVpItem,
+  CreateVpItems,
   UpdateVpItems,
   DeleteVpItem,
   GetSendItemHistories,
@@ -78,8 +81,8 @@ const VpItemMantineTable: React.FC = () => {
    }[]>([]);
   
   const isSwitched = (cell: MRT_Cell<item, unknown>, key: string, row: MRT_Row<item>): Boolean => {
-    return switchtates[row.original.ItemID] && Object.hasOwn(switchtates[row.original.ItemID], key) 
-              ? switchtates[row.original.ItemID][key] : cell.getValue();
+    return switchtates[row.original.ItemID] && switchtates[row.original.ItemID].hasOwnProperty(key) 
+              ? Boolean(switchtates[row.original.ItemID][key]) : Boolean(cell.getValue());
   } 
 
   const fileInputRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
@@ -221,7 +224,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       PublicKey: '563449A5511C45FBAD060D310088AD2E',
       ExtItems: [extItem]
     };
-    const responses: ExtItemResponse[] = await postItemsToSD(extItems);
+    const responses: ExtItemResponse[] = await postItems(extItems);
 
     responses.forEach((res: ExtItemResponse) => {
       new Promise(async (resolve) => {
@@ -415,7 +418,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         size: 600,        
         editVariant: 'select',
         mantineEditSelectProps: ({ row }) => ({
-          data: deptCategories.find(x => x.DepartmentID === (editedItems[row.id] ? editedItems[row.id].DepartmentID : row.original.DepartmentID.toString()))?.Categories,
+          data: deptCategories.find(x => x.DepartmentID === (editedItems[row.id] ? editedItems[row.id].DepartmentID : row.original.DepartmentID))?.Categories,
           //store edited item in state to be saved later
           onChange: (value: any) =>
             setEditedItems({
@@ -540,7 +543,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         Cell: ({ cell, row }) => {          
           return (            
             <Switch
-              checked={isSwitched(cell, 'ManualPrice', row)}
+              checked={isSwitched(cell, 'manualPrice', row)}
               onChange={(event: any) => {
                 const status = event.currentTarget.checked;
                 setSwitchtates({ 
@@ -564,7 +567,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         Cell: ({ cell, row }) => {          
           return (            
             <Switch
-              checked={isSwitched(cell, 'Discountable', row)}
+              checked={isSwitched(cell, 'discountable', row)}
               onChange={(event: any) => {
                 const status = event.currentTarget.checked;
                 setSwitchtates({ 
@@ -588,7 +591,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         Cell: ({ cell, row }) => {          
           return (            
             <Switch
-              checked={isSwitched(cell, 'Inventory', row)}
+              checked={isSwitched(cell, 'inventory', row)}
               onChange={(event: any) => {
                 const status = event.currentTarget.checked;
                 setSwitchtates({ 
@@ -612,7 +615,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         Cell: ({ cell, row }) => {          
           return (            
             <Switch
-              checked={isSwitched(cell, 'AvailableOnWeb', row)}
+              checked={isSwitched(cell, 'availableOnWeb', row)}
               onChange={(event: any) => {
                 const status = event.currentTarget.checked;
                 setSwitchtates({ 
@@ -636,7 +639,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         Cell: ({ cell, row }) => {          
           return (            
             <Switch
-              checked={isSwitched(cell, 'BtlDepositInPrice', row)}
+              checked={isSwitched(cell, 'btlDepositInPrice', row)}
               onChange={(event: any) => {
                 const status = event.currentTarget.checked;
                 setSwitchtates({ 
@@ -660,7 +663,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         Cell: ({ cell, row }) => {          
           return (            
             <Switch
-              checked={isSwitched(cell, 'BtlDepositInCost', row)}
+              checked={isSwitched(cell, 'btlDepositInCost', row)}
               onChange={(event: any) => {
                 const status = event.currentTarget.checked;
                 setSwitchtates({ 
@@ -684,7 +687,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         Cell: ({ cell, row }) => {          
           return (            
             <Switch
-              checked={isSwitched(cell, 'EcoFeeInPrice', row)}
+              checked={isSwitched(cell, 'ecoFeeInPrice', row)}
               onChange={(event: any) => {
                 const status = event.currentTarget.checked;
                 setSwitchtates({ 
@@ -708,7 +711,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         Cell: ({ cell, row }) => {          
           return (            
             <Switch
-              checked={isSwitched(cell, 'EcoFeeInCost', row)}
+              checked={isSwitched(cell, 'ecoFeeInCost', row)}
               onChange={(event: any) => {
                 const status = event.currentTarget.checked;
                 setSwitchtates({ 
@@ -824,7 +827,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
     [editedItems, validationErrors, depts, deptCategories, taxCodes, brands, rptCodes, itemTypes, itemStatuses, currentToken],
   );
 
-  const table = useMantineReactTable({
+  const table = useMantineReactTable({    
     columns,
     data: fetchedItems,
     createDisplayMode: 'row', // ('modal', and 'custom' are also available)
@@ -843,6 +846,9 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       sx: {
         minHeight: '500px',
       },
+    },
+    mantineTableProps: {     
+      className: 'custom-table',
     },
     onCreatingRowCancel: () => setValidationErrors({}),
     onCreatingRowSave: handleCreateItem,
@@ -908,13 +914,43 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
 function useCreateItem() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (item: item) => {
-      //send api CREATE request here      
-      return await new Promise(async (resolve) => {
-        item.CreateUserID = '410544B2-4001-4271-9855-FEC4B6A6442A';        
-        const result = await CreateVpItem(item);
-        resolve(result);          
-      });      
+    mutationFn: async (items: item[]) => {
+      //send api CREATE request here
+      const newItems = items.map((t) => ({
+        ItemID: 0, //t.ItemID,
+        //DepartmentID: Number(t.DepartmentID),
+        CategoryID: Number(t.CategoryID),
+        ItemName: t.ItemName,
+        ItemDesc: t.ItemDesc,
+        ItemNumber: t.ItemNumber,
+        TaxCodeID: Number(t.TaxCodeID),
+        UnitPrice: t.UnitPrice,
+        UnitCost: t.UnitCost,
+        STS: t.STS,
+        ItemType: t.ItemType,
+        BrandID: Number(t.BrandID),
+        Barcode: t.Barcode,
+        ReportCode: t.ReportCode,
+        ImageFileName: t.ImageFileName,
+        ImageFileData: t.ImageFileData,
+        ManualPrice: typeof(t.ManualPrice) === 'boolean' ? t.ManualPrice : false,
+        Discountable: typeof(t.Discountable) === 'boolean' ? t.ManualPrice : false,
+        Inventory: typeof(t.Inventory) === 'boolean' ? t.Inventory : false,
+        AvailableOnWeb: typeof(t.AvailableOnWeb) === 'boolean' ? t.AvailableOnWeb : false,
+        BtlDepositInPrice: typeof(t.BtlDepositInPrice) === 'boolean' ? t.BtlDepositInPrice : false,
+        BtlDepositInCost: typeof(t.BtlDepositInCost) === 'boolean' ? t.BtlDepositInCost : false,
+        EcoFeeInPrice: typeof(t.EcoFeeInPrice) === 'boolean' ? t.EcoFeeInPrice : false,
+        EcoFeeInCost: typeof(t.EcoFeeInCost) === 'boolean' ? t.EcoFeeInCost : false,
+        //SdItemID: t.SdItemID,
+        //LastAction: t.LastAction,
+        //LastSendDate: t.LastSendDate,
+        CreatedDate: new Date(), // t.CreatedDate,
+        CreateUserID: '410544B2-4001-4271-9855-FEC4B6A6442A', //t.CreateUserID
+      }));
+      
+      const result = await CreateVpItems(newItems);
+      return result;          
+      
     },
     //client side optimistic update
     onMutate: (newItemInfo: item) => {
@@ -943,17 +979,17 @@ function useGetItems() {
       const items = await GetVpItems(currentToken, '');
       const list = items.map((t) => ({
         ItemID: t.ItemID,
-        DepartmentID: t.DepartmentID.toString(),
-        CategoryID: t.CategoryID.toString(),
+        DepartmentID: t.DepartmentID ? t.DepartmentID.toString() : '',
+        CategoryID: t.CategoryID ? t.CategoryID.toString() : '',
         ItemName: t.ItemName,
         ItemDesc: t.ItemDesc,
-        ItemNumber: t.ItemName,
-        TaxCodeID: t.TaxCodeID.toString(),
+        ItemNumber: t.ItemNumber,
+        TaxCodeID: t.TaxCodeID ? t.TaxCodeID.toString() : '',
         UnitPrice: t.UnitPrice,
         UnitCost: t.UnitCost,
         STS: t.STS,
         ItemType: t.ItemType,
-        BrandID: t.BrandID.toString(),
+        BrandID: t.BrandID ? t.BrandID.toString() : '',
         Barcode: t.Barcode,
         ReportCode: t.ReportCode,
         ImageFileName: t.ImageFileName,
@@ -1028,8 +1064,8 @@ function useDeleteItem() {
 }
 
 const validateRequired = (value: string) => !!value?.length;
-const validateBarcodeDuplication = async (barcode: string) => await checkBarcodeDuplication('token', barcode);
-const validateItemNumberDuplication = async (barcode: string) => await checkItemNumberDuplication('token', barcode);
+const validateBarcodeDuplication = async (barcode: string) => await barcodesDuplicationCheck(currentToken, barcode);
+const validateItemNumberDuplication = async (barcode: string) => await itemNumberDuplicationCheck(currentToken, barcode);
 const validateEmail = (email: string) =>
   !!email.length &&
   email

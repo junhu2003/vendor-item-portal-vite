@@ -109,18 +109,3 @@ export async function getItemStatusLabels(): Promise<{label: string, value: stri
 
     return list;    
 }
-
-export async function checkBarcodeDuplication(publicToken: string, barcodeString: string): Promise<boolean> {
-    const isDuplicated: boolean = await barcodesDuplicationCheck(publicToken, barcodeString);        
-    return isDuplicated;    
-}
-
-export async function checkItemNumberDuplication(publicToken: string, itemNumber: string): Promise<boolean> {
-    const isDuplicated: boolean = await itemNumberDuplicationCheck(publicToken, itemNumber);        
-    return isDuplicated;    
-}
-
-export async function postItemsToSD(extItems: ExtItems): Promise<ExtItemResponse[]> {
-    const responses: ExtItemResponse[] = await postItems(extItems);        
-    return responses;    
-}
