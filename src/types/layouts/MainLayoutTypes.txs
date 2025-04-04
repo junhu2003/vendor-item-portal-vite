@@ -1,0 +1,3 @@
+interface MainLayoutProps {
+  changeSelectedStore: (selectedStore: Store) => void;
+}

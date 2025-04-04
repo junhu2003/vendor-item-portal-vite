@@ -26,6 +26,23 @@ export async function GetAllVpUsers(): Promise<Users[]> {
     }
 }
 
+export async function GetMyVpUsers(myUserID: string): Promise<Users[]> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/GetMyVpUsers?myUserID=' + myUserID;    
+    const response = await fetch(reqUrl, { 
+        method: 'GET', 
+        credentials: 'include', 
+        mode: 'cors', 
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }});
+    if (response.ok && response.status === 200) {
+        return response.json();
+    } else {
+        return [];
+    }
+}
+
 export async function GetVpUserByEmail(email: string): Promise<Users | null> {
     var reqUrl = apiBaseUrl + '/api/VpItem/v1/GetVpUserByEmail?email=' + email;  
     const response = await fetch(reqUrl, { 
@@ -121,6 +138,23 @@ export async function GetAllStores(): Promise<Store[]> {
     }
 }
 
+export async function GetUserStores(userID: string): Promise<Store[]> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/GetUserStores?userID=' + userID;  
+    const response = await fetch(reqUrl, { 
+        method: 'GET', 
+        credentials: 'include', 
+        mode: 'cors', 
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }});
+    if (response.ok && response.status === 200) {
+        return response.json();
+    } else {
+        return [];
+    }
+}
+
 export async function UpdateStores(stores: Store[]): Promise<boolean> {
     var reqUrl = apiBaseUrl + '/api/VpItem/v1/UpdateStores';  
     const response = await fetch(reqUrl, { 
@@ -176,6 +210,23 @@ export async function DeleteStore(storeID: number): Promise<number> {
 
 export async function GetAllUserStoreRelations(): Promise<UserStoreRelation[]> {
     var reqUrl = apiBaseUrl + '/api/VpItem/v1/GetAllUserStoreRelations'    
+    const response = await fetch(reqUrl, { 
+        method: 'GET', 
+        credentials: 'include', 
+        mode: 'cors', 
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }});
+    if (response.ok && response.status === 200) {
+        return response.json();
+    } else {
+        return [];
+    }
+}
+
+export async function GetMyUserStoreRelations(userID: string): Promise<UserStoreRelation[]> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/GetMyUserStoreRelations?userID=' + userID;  
     const response = await fetch(reqUrl, { 
         method: 'GET', 
         credentials: 'include', 

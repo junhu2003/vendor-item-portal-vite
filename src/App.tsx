@@ -15,8 +15,15 @@ import MainLayout from './layouts/MainLayout';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Admins from './pages/Admins';
+import { Store } from './types/vpadmin/vpAdminTypes';
 
 const App: React.FC = () => {
+  const [selectedStore, setSelectedStore] = React.useState<Store | null>(null);
+  const changeSelectedStore = (store: Store) => {
+    setSelectedStore(store);
+  }
+    // Logic to adjust sidebar space
+
   return (
     <Router>
       <AuthProvider>
@@ -25,11 +32,11 @@ const App: React.FC = () => {
           <Route 
             element={
               <ProtectedRoute>
-                <MainLayout />
+                <MainLayout changeSelectedStore={changeSelectedStore} />
               </ProtectedRoute>
             }
           >
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard selectedStore={selectedStore} />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/admins" element={<Admins />} />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />

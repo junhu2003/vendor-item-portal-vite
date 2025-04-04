@@ -21,11 +21,15 @@ import {
   UpdateUserStoreRelations,
   DeleteUserStoreRelation,
   GetAllUserStoreRelations,
+  GetMyUserStoreRelations,
   GetAllVpUsers,
   GetAllStores,
   } from '../api/vp-item-api';
+  import { useAuth } from '../context/AuthContext';
 
 const UserStoreRelationMantineTable: React.FC = () => {
+const { loginUser } = useAuth();
+
   const [validationErrors, setValidationErrors] = useState<
   Record<string, string | undefined>
 >({});
@@ -70,7 +74,7 @@ const {
   isError: isLoadingUserStoreRelationsError,
   isFetching: isFetchingUserStoreRelations,
   isLoading: isLoadingUserStoreRelations,
-} = useGetUserStoreRelations();
+} = useGetUserStoreRelations(loginUser);
 //call UPDATE hook
 const { mutateAsync: updateUserStoreRelations, isPending: isUpdatingUserStoreRelation } =
   useUpdateUserStoreRelations();
@@ -251,12 +255,12 @@ return useMutation({
 }
 
 //READ hook (get users from api)
-function useGetUserStoreRelations() {
+function useGetUserStoreRelations(loginUser: Users) {
   return useQuery<UserStoreRelation[]>({
     queryKey: ['relations'],
     queryFn: async () => {
       //send api request here
-      const relationData = await GetAllUserStoreRelations();
+      const relationData = await GetMyUserStoreRelations(loginUser.UserID);
       const relations: UserStoreRelation[] = relationData.map((relation) => (
         {
           RelationID: relation.RelationID,

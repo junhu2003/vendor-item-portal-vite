@@ -11,7 +11,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Authentication Provider
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<Users | null>(null);
+  const [loginUser, setLoginUser] = useState<Users | null>(null);
   const navigate = useNavigate();
 
   // Simulated login (replace with actual API call)
@@ -22,7 +22,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const passwordsMatch = await bcryptjs.compare(password, users.Password);
     if (passwordsMatch) {
-      setUser(users);
+      setLoginUser(users);
       localStorage.setItem('user', JSON.stringify(users));
       localStorage.setItem('token', 'mock-jwt-token');
       
@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Logout function
   const logout = () => {
-    setUser(null);
+    setLoginUser(null);
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     navigate('/login');
@@ -47,15 +47,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const token = localStorage.getItem('token');
     
     if (storedUser && token) {
-      setUser(JSON.parse(storedUser));
+      setLoginUser(JSON.parse(storedUser));
     }
   }, []);
 
   // Authentication state
-  const isAuthenticated = !!user;
+  const isAuthenticated = !!loginUser;
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isAuthenticated }}>
+    <AuthContext.Provider value={{ loginUser, login, logout, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

@@ -15,15 +15,19 @@ import {
 import { ActionIcon, Button, Text, Tooltip } from '@mantine/core';
 import {modals } from '@mantine/modals';
 import { IconTrash } from '@tabler/icons-react';
-import { Store } from '../types/vpadmin/vpAdminTypes';
+import { Store, Users } from '../types/vpadmin/vpAdminTypes';
 import {   
   CreateStore,
   UpdateStores,
   DeleteStore,
   GetAllStores,
+  GetUserStores,
   } from '../api/vp-item-api';
+import { useAuth } from '../context/AuthContext';
 
 const StoreMantineTable: React.FC = () => {
+const { loginUser } = useAuth();
+
   const [validationErrors, setValidationErrors] = useState<
   Record<string, string | undefined>
 >({});
@@ -39,7 +43,7 @@ const {
   isError: isLoadingStoresError,
   isFetching: isFetchingStores,
   isLoading: isLoadingStores,
-} = useGetStores();
+} = useGetStores(loginUser);
 //call UPDATE hook
 const { mutateAsync: updateStores, isPending: isUpdatingStore } =
   useUpdateUsers();
@@ -286,12 +290,12 @@ return useMutation({
 }
 
 //READ hook (get users from api)
-function useGetStores() {
+function useGetStores(loginUser: Users) {
 return useQuery<Store[]>({
   queryKey: ['stores'],
   queryFn: async () => {
     //send api request here
-    const stores = await GetAllStores();    
+    const stores = await GetUserStores(loginUser.UserID);    
     return stores;
 
   },

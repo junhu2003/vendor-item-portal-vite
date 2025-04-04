@@ -18,7 +18,7 @@ const ToggleableSidebar: React.FC<ToggleableSidebarProps> = ({
   adjustSidebarSpace, adjustPageTitle }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const location = useLocation();
-  const { logout, user } = useAuth();
+  const { logout, loginUser } = useAuth();
 
   // Menu items with path, icon, and label
   const menuItems = [
@@ -71,10 +71,10 @@ const ToggleableSidebar: React.FC<ToggleableSidebarProps> = ({
       {/* Sidebar Content */}
       <div className="pt-3 px-2">
         {/* User Info */}
-        {isExpanded && user && (
+        {isExpanded && loginUser && (
           <div className="mb-6 text-center">
-            <h2 className="text-xl text-gray-400 font-semibold truncate">{user.Name}</h2>
-            <p className="text-sm text-gray-400 truncate">{user.Email}</p>
+            <h2 className="text-xl text-gray-400 font-semibold truncate">{loginUser.Name}</h2>
+            <p className="text-sm text-gray-400 truncate">{loginUser.Email}</p>
           </div>
         )}
 

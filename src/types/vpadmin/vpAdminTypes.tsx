@@ -5,6 +5,7 @@ export type Users = {
 	Email: string,
 	Password: string,
 	UserLevelID: string,
+    ManagerUserID?: string,
 	IsNewUser: boolean,
   };
 

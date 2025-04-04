@@ -3,13 +3,13 @@ import {useAuth} from '../context/AuthContext';
 import Toast from '../components/Toast';
 
 const Profile: React.FC = () => {
-    const { user } = useAuth();
+    const { loginUser } = useAuth();
     const [toast, setToast] = useState<React.ReactElement | null>(null);
   
     return (
       <div>
         <h1 className="text-3xl font-bold mb-6">Profile</h1>
-        <p>Welcome, {user?.Name}!</p>
+        <p>Welcome, {loginUser?.Name}!</p>
 
         <div className="flex flex-col items-center justify-center min-h-screen space-y-4">
       <button

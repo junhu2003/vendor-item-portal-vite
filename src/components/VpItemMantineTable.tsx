@@ -18,7 +18,7 @@ import {
 } from '@tanstack/react-query';
 
 import { DeptCategories, ExtItemResponse } from '../types/sditem/sdItemTypes'; 
-import { item, ExtItems, SendItemHistory } from '../types/vpadmin/vpAdminTypes';
+import { item, ExtItems, SendItemHistory, Store, Users } from '../types/vpadmin/vpAdminTypes';
 import {
   getDeptLabels, 
   getCategoryLabels, 
@@ -42,11 +42,12 @@ import {
   DeleteVpItem, 
   GetLastSendItemHistory, 
 } from '../api/vp-item-api';
+import { useAuth } from '../context/AuthContext';
 import Toast from './Toast';
 
-const currentToken = '563449A5511C45FBAD060D310088AD2E';
 
-const VpItemMantineTable: React.FC = () => {
+const VpItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedStore}) => {
+  const { loginUser } = useAuth();  
 
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
@@ -119,51 +120,55 @@ const VpItemMantineTable: React.FC = () => {
   }
 
   useEffect(() => {
-    //setCurrentToken('563449A5511C45FBAD060D310088AD2E');
-
+    
     const fetchData = async () => {
-      // retrieve departments
-      const deptLabels = await getDeptLabels(currentToken);
-      setDepts(deptLabels);
 
-      // retrieve categories
-      const cateLabels = await getCategoryLabels(currentToken);
-      setDeptCategories(cateLabels);
+      if (selectedStore && selectedStore.HeadOfficeToken.length > 0) {
 
-      // retrieve tax codes
-      const codeLabels = await getTaxCodeLabels(currentToken);
-      setTaxCodes(codeLabels);
+        // retrieve departments
+        const deptLabels = await getDeptLabels(selectedStore.HeadOfficeToken);
+        setDepts(deptLabels);
 
-      // retrieve brands
-      const brandLabels = await getBrandLabels(currentToken);
-      setBrands(brandLabels);
+        // retrieve categories
+        const cateLabels = await getCategoryLabels(selectedStore.HeadOfficeToken);
+        setDeptCategories(cateLabels);
 
-      // retrieve report codes
-      const rptCodeLabels = await getReportCodeLabels(currentToken);
-      setRptCodes(rptCodeLabels);
+        // retrieve tax codes
+        const codeLabels = await getTaxCodeLabels(selectedStore.HeadOfficeToken);
+        setTaxCodes(codeLabels);
 
-      // retrieve item types
-      const itemTypeLabels = await getItemTypeLabels();      
-      setItemTypes(itemTypeLabels);
+        // retrieve brands
+        const brandLabels = await getBrandLabels(selectedStore.HeadOfficeToken);
+        setBrands(brandLabels);
 
-      // retrieve item statuses
-      const itemStatusLabels = await getItemStatusLabels();
-      setItemStatuses(itemStatusLabels);    
+        // retrieve report codes
+        const rptCodeLabels = await getReportCodeLabels(selectedStore.HeadOfficeToken);
+        setRptCodes(rptCodeLabels);
+
+        // retrieve item types
+        const itemTypeLabels = await getItemTypeLabels();      
+        setItemTypes(itemTypeLabels);
+
+        // retrieve item statuses
+        const itemStatusLabels = await getItemStatusLabels();
+        setItemStatuses(itemStatusLabels);    
+      }      
     }
+    
     fetchData();
 
-  }, []);
+  }, [selectedStore]);
 
   //call CREATE hook
   const { mutateAsync: createItem, isPending: isCreatingItem } =
-    useCreateItem();
+    useCreateItem(loginUser);
   //call READ hook
   const {
     data: fetchedItems = [],
     isError: isLoadingItemsError,
     isFetching: isFetchingItems,
     isLoading: isLoadingItems,
-  } = useGetItems();
+  } = useGetItems(selectedStore);
   //call UPDATE hook
   const { mutateAsync: updateItems, isPending: isUpdatingItem } =
     useUpdateItems();
@@ -227,7 +232,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
 
     extItem.LastSendDate = extItem.LastSendDate ? new Date(extItem.LastSendDate) : undefined;
     const extItems: ExtItems = {
-      PublicKey: currentToken,
+      PublicKey: selectedStore.HeadOfficeToken,
       ExtItems: [{
         ItemID: extItem.ItemID,
         DepartmentID: Number(extItem.DepartmentID),
@@ -257,7 +262,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         //LastAction: extItem.LastAction,
         //LastSendDate: extItem.LastSendDate,
         CreatedDate: new Date(), // extItem.CreatedDate,
-        CreateUserID: '410544B2-4001-4271-9855-FEC4B6A6442A', //extItem.CreateUserID
+        CreateUserID: extItem.CreateUserID
       }]
     };
     const resresponses: ExtItemResponse[] = await postItems(extItems);
@@ -292,7 +297,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
           //store edited item in state to be saved later
           onBlur: async (event) => {
             const currentValue = event.currentTarget.value;
-            const validationError = await validateBarcodeDuplication(currentValue) 
+            const validationError = await validateBarcodeDuplication(selectedStore?.HeadOfficeToken, currentValue) 
                 ? 'Duplicate Barcodes' 
                 : undefined;
             setValidationErrors({
@@ -317,7 +322,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
           //store edited item in state to be saved later
           onBlur: async (event) => {
             const currentValue = event.currentTarget.value;
-            const validationError = await validateItemNumberDuplication(currentValue) 
+            const validationError = await validateItemNumberDuplication(selectedStore?.HeadOfficeToken, currentValue) 
                 ? 'Duplicate Barcodes' 
                 : undefined;
             setValidationErrors({
@@ -854,7 +859,8 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         }),
       },
     ],
-    [editedItems, validationErrors, depts, deptCategories, taxCodes, brands, rptCodes, itemTypes, itemStatuses, currentToken],
+    [editedItems, validationErrors, depts, deptCategories, taxCodes, brands, rptCodes, 
+      itemTypes, itemStatuses, selectedStore],
   );
 
   const table = useMantineReactTable({    
@@ -940,13 +946,15 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
   return (
   <div>
     {toast}
-    <MantineReactTable table={table} />    
+    { selectedStore && selectedStore.HeadOfficeToken.length > 0 
+      && <MantineReactTable table={table} /> }
+    
   </div>    
 );
 };
 
 //CREATE hook (post new item to api)
-function useCreateItem() {
+function useCreateItem(loginUser: Users) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (items: item[]) => {
@@ -980,7 +988,7 @@ function useCreateItem() {
         //LastAction: t.LastAction,
         //LastSendDate: t.LastSendDate,
         CreatedDate: new Date(), // t.CreatedDate,
-        CreateUserID: '410544B2-4001-4271-9855-FEC4B6A6442A', //t.CreateUserID
+        CreateUserID: loginUser.UserID, //t.CreateUserID
       }));
       
       const result = await CreateVpItems(newItems);
@@ -1006,12 +1014,12 @@ function useCreateItem() {
 }
 
 //READ hook (get items from api)
-function useGetItems() {
+function useGetItems(store: Store) {
   return useQuery<item[]>({
     queryKey: ['items'],
     queryFn: async () => {
       //send api request here      
-      const items = await GetVpItems(currentToken, '');
+      const items = await GetVpItems(store.HeadOfficeToken, '');
       const list = items.map((t) => ({
         ItemID: t.ItemID,
         DepartmentID: t.DepartmentID ? t.DepartmentID.toString() : '',
@@ -1099,8 +1107,8 @@ function useDeleteItem() {
 }
 
 const validateRequired = (value: string) => !!value?.length;
-const validateBarcodeDuplication = async (barcode: string) => await barcodesDuplicationCheck(currentToken, barcode);
-const validateItemNumberDuplication = async (barcode: string) => await itemNumberDuplicationCheck(currentToken, barcode);
+const validateBarcodeDuplication = async (publicKey: string, barcode: string) => await barcodesDuplicationCheck(publicKey, barcode);
+const validateItemNumberDuplication = async (publickey: string, itemNumber: string) => await itemNumberDuplicationCheck(publickey, itemNumber);
 const validateEmail = (email: string) =>
   !!email.length &&
   email

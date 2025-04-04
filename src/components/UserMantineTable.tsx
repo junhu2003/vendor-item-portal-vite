@@ -22,12 +22,17 @@ import {
   UpdateVpUser,
   DeleteVpUser,
   GetAllVpUsers,
+  GetMyVpUsers,
   } from '../api/vp-item-api';
+import { useAuth } from '../context/AuthContext';
 
 const UserMantineTable: React.FC = () => {
+  const { loginUser } = useAuth(); //get logged in user from context  
+
   const [validationErrors, setValidationErrors] = useState<
   Record<string, string | undefined>
 >({});
+
 //keep track of rows that have been edited
 const [editedUsers, setEditedUsers] = useState<Record<string, Users>>({});
 
@@ -58,7 +63,7 @@ const {
   isError: isLoadingUsersError,
   isFetching: isFetchingUsers,
   isLoading: isLoadingUsers,
-} = useGetUsers();
+} = loginUser ? useGetUsers(loginUser) : { data: [], isError: false, isFetching: false, isLoading: false };
 //call UPDATE hook
 const { mutateAsync: updateUsers, isPending: isUpdatingUser } =
   useUpdateUsers();
@@ -270,12 +275,12 @@ return useMutation({
 }
 
 //READ hook (get users from api)
-function useGetUsers() {
+function useGetUsers(loginUser: Users) {
 return useQuery<Users[]>({
   queryKey: ['users'],
   queryFn: async () => {
     //send api request here
-    const list = await GetAllVpUsers();
+    const list = await GetMyVpUsers(loginUser.UserID);
     const users = list?.map((user) => ({
       UserID: user.UserID,
       Name: user.Name,
