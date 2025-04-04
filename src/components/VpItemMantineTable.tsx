@@ -10,7 +10,7 @@ import {
 } from 'mantine-react-table';
 import { ActionIcon, Button, Text, Tooltip, FileInput, MultiSelect, Switch } from '@mantine/core';
 import { modals } from '@mantine/modals';
-import { IconTrash, IconSend, IconFileImport } from '@tabler/icons-react';
+import { IconTrash, IconSend, IconFileImport, IconInfoCircle } from '@tabler/icons-react';
 import {  
   useMutation,
   useQuery,
@@ -18,7 +18,7 @@ import {
 } from '@tanstack/react-query';
 
 import { DeptCategories, ExtItemResponse } from '../types/sditem/sdItemTypes'; 
-import { item, ExtItems } from '../types/vpadmin/vpAdminTypes';
+import { item, ExtItems, SendItemHistory } from '../types/vpadmin/vpAdminTypes';
 import {
   getDeptLabels, 
   getCategoryLabels, 
@@ -39,7 +39,8 @@ import {
   GetVpItems,
   CreateVpItems,
   UpdateVpItems,
-  DeleteVpItem,  
+  DeleteVpItem, 
+  GetLastSendItemHistory, 
 } from '../api/vp-item-api';
 import Toast from './Toast';
 
@@ -54,6 +55,7 @@ const VpItemMantineTable: React.FC = () => {
   const queryClient = useQueryClient();
 
   const [toast, setToast] = useState<React.ReactElement | null>(null);
+  const [lastSendItemHistory, setLastSendItemHistory] = useState<SendItemHistory | null>(null);
   //const [currentToken, setCurrentToken] = useState('');
 
   //keep track of rows that have been edited  
@@ -110,6 +112,11 @@ const VpItemMantineTable: React.FC = () => {
   const openFileExplorer = (rowId: string) => {    
     fileInputRefs.current[rowId]?.click();
   };
+
+  const getLastSendingHistory = async (itemID: number) => {
+    const res = await GetLastSendItemHistory(itemID);
+    setLastSendItemHistory(res);
+  }
 
   useEffect(() => {
     //setCurrentToken('563449A5511C45FBAD060D310088AD2E');
@@ -880,6 +887,11 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         <Tooltip label="Delete">
           <ActionIcon style={{background: 'transparent'}} onClick={() => openDeleteConfirmModal(row)}>
             <IconTrash color='red' />
+          </ActionIcon>
+        </Tooltip>
+        <Tooltip label={ lastSendItemHistory ? lastSendItemHistory.ResponseMsg : ''}>
+          <ActionIcon style={{background: 'transparent'}} onMouseEnter={() => getLastSendingHistory(Number(row.original.ItemID))} onMouseLeave={() => setLastSendItemHistory(null)}>
+            <IconInfoCircle color='purple' />
           </ActionIcon>
         </Tooltip>
         <Tooltip label="Send to SD">

@@ -29,7 +29,7 @@ const MainLayout: React.FC = () => {
       >
         <div className="flex justify-between items-center p-3 shadow-md bg-blue-300 text-white">
           <h6 className="text-l font-bold">{pageTitle}</h6>
-          <div className="flex items-center space-x-4">ABC</div>
+          <div className="flex items-center space-x-4"></div>
         </div>
         <Outlet />
       </main>

@@ -331,10 +331,10 @@ export async function DeleteVpItem(itemID: number): Promise<boolean> {
     }
 }
 
-export async function GetSendItemHistories(): Promise<SendItemHistory[]> {
-    var reqUrl = apiBaseUrl + '/api/VpItem/v1/GetSendItemHistories'    
+export async function GetLastSendItemHistory(itemID: number): Promise<SendItemHistory | null> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/GetLastSendItemHistory?itemID=' + itemID;    
     const response = await fetch(reqUrl, { 
-        method: 'POST', 
+        method: 'GET', 
         credentials: 'include', 
         mode: 'cors', 
         headers: {
@@ -344,7 +344,7 @@ export async function GetSendItemHistories(): Promise<SendItemHistory[]> {
     if (response.ok && response.status === 200) {
         return response.json();
     } else {
-        return [];
+        return null;
     }
 }
 
