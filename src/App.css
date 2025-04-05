@@ -44,6 +44,6 @@
 }
 
 .custom-table td, .custom-table th {
-  padding: 4px 8px; /* Compact rows */
+  padding: 1px 8px; /* Compact rows */
   font-size: small !important;
 }

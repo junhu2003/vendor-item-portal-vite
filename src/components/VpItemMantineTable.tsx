@@ -289,7 +289,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'Barcode',
         header: 'Barcode',
-        size: 180,
+        size: 100,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'text',
           required: true,
@@ -313,8 +313,8 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       },
       {
         accessorKey: 'ItemNumber',
-        header: 'Item Number',
-        size: 180,
+        header: 'Item No.',
+        size: 100,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'text',
           required: true,
@@ -339,7 +339,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'ItemName',
         header: 'Name',
-        size: 280,
+        size: 128,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'text',
           required: true,
@@ -362,8 +362,8 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       },
       {
         accessorKey: 'ItemDesc',
-        header: 'Description',
-        size: 350,
+        header: 'Desc',
+        size: 150,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'text',
           required: true,
@@ -386,8 +386,8 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       },
       {
         accessorKey: 'UnitPrice',
-        header: 'Unit Price',
-        size: 100,
+        header: 'Unit P',
+        size: 80,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'number',
           required: true,
@@ -410,8 +410,8 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       },      
       {
         accessorKey: 'UnitCost',
-        header: 'Unit Cost',
-        size: 100,
+        header: 'Unit C',
+        size: 80,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'number',
           required: true,
@@ -435,7 +435,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'DepartmentID',
         header: 'Department',
-        size: 300,        
+        size: 150,        
         editVariant: 'select',
         mantineEditSelectProps: ({ row }) => ({
           data: depts,
@@ -450,7 +450,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'CategoryID',
         header: 'Category',
-        size: 600,        
+        size: 150,        
         editVariant: 'select',
         mantineEditSelectProps: ({ row }) => ({
           data: deptCategories.find(x => x.DepartmentID === (editedItems[row.id] ? editedItems[row.id].DepartmentID : row.original.DepartmentID))?.Categories,
@@ -480,7 +480,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'ItemType',
         header: 'item Type',        
-        size: 200,
+        size: 100,
         editVariant: 'select',
         mantineEditSelectProps: ({ row }) => ({
           data: itemTypes,
@@ -495,7 +495,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'STS',
         header: 'STS',
-        size: 180,
+        size: 100,
         editVariant: 'select',
         mantineEditSelectProps: ({ row }) => ({
           data: itemStatuses,
@@ -510,7 +510,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'BrandID',
         header: 'Brand',
-        size: 250,        
+        size: 150,        
         editVariant: 'select',
         mantineEditSelectProps: ({ row }) => ({
           data: brands,
@@ -525,7 +525,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: "ReportCode",
         header: "Report Codes",
-        size: 500, 
+        size: 400, 
         enableEditing: false,
         Cell: ({ row }) => {
           const curItem = editedItems[row.id] ? editedItems[row.id] : row.original;
@@ -572,12 +572,12 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       },
       {
         accessorKey: 'ManualPrice',
-        header: 'Manual Price',
+        header: 'MP',
         size: 60,        
         enableEditing: false, // Prevent editing for file column
         Cell: ({ cell, row }) => {          
           return (            
-            <Switch
+            <Switch              
               checked={isSwitched(cell, 'manualPrice', row)}
               onChange={(event: any) => {
                 const status = event.currentTarget.checked;
@@ -590,13 +590,14 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), ManualPrice: status },
                 });
               }}
+              size='xs'
             />
           );
         },        
       },
       {
         accessorKey: 'Discountable',
-        header: 'Discountable',
+        header: 'Dis',
         size: 60,
         enableEditing: false, // Prevent editing for file column
         Cell: ({ cell, row }) => {          
@@ -614,13 +615,14 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), Discountable: status },
                 });
               }}
+              size='xs'
             />
           );
         },        
       },
       {
         accessorKey: 'Inventory',
-        header: 'Track Inventory',
+        header: 'Inv',
         size: 60,
         enableEditing: false, // Prevent editing for file column
         Cell: ({ cell, row }) => {          
@@ -638,13 +640,14 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), Inventory: status },
                 });
               }}
+              size='xs'
             />
           );
         },        
       },
       {
         accessorKey: 'AvailableOnWeb',
-        header: 'Available On Web',
+        header: 'AOW',
         size: 60,
         enableEditing: false, // Prevent editing for file column
         Cell: ({ cell, row }) => {          
@@ -662,14 +665,15 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), AvailableOnWeb: status },
                 });
               }}
+              size='xs'
             />
           );
         },        
       },
       {
         accessorKey: 'BtlDepositInPrice',
-        header: 'Bottle Deposit Included In Price',
-        size: 200,
+        header: 'BDP',
+        size: 60,
         enableEditing: false, // Prevent editing for file column
         Cell: ({ cell, row }) => {          
           return (            
@@ -686,14 +690,15 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), BtlDepositInPrice: status },
                 });
               }}
+              size='xs'
             />
           );
         },        
       },
       {
         accessorKey: 'BtlDepositInCost',
-        header: 'Bottle Deposit Included In Cost',
-        size: 200,
+        header: 'BDC',
+        size: 60,
         enableEditing: false, // Prevent editing for file column
         Cell: ({ cell, row }) => {          
           return (            
@@ -710,14 +715,15 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), BtlDepositInCost: status },
                 });
               }}
+              size='xs'
             />
           );
         },        
       },
       {
         accessorKey: 'EcoFeeInPrice',
-        header: 'Eco Fee Included In Price',
-        size: 200,
+        header: 'EcoP',
+        size: 60,
         enableEditing: false, // Prevent editing for file column
         Cell: ({ cell, row }) => {          
           return (            
@@ -734,14 +740,15 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), EcoFeeInPrice: status },
                 });
               }}
+              size='xs'
             />
           );
         },        
       },
       {
         accessorKey: 'EcoFeeInCost',
-        header: 'Eco Fee Included In Cost',
-        size: 200,
+        header: 'EcoC',
+        size: 60,
         enableEditing: false, // Prevent editing for file column
         Cell: ({ cell, row }) => {          
           return (            
@@ -758,15 +765,16 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), EcoFeeInCost: status },
                 });
               }}
+              size='xs'
             />
           );
         },        
       },
       {
         accessorKey: 'SdItemID',
-        header: 'SD item ID',
+        header: 'SD ID',
         enableEditing: false,
-        size: 100,
+        size: 80,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'text',          
           error: validationErrors?.[cell.id],
@@ -788,9 +796,9 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       },
       {
         accessorKey: 'LastAction',
-        header: 'Action',
+        header: 'Act',
         enableEditing: false,
-        size: 100,
+        size: 80,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'text',          
           error: validationErrors?.[cell.id],
@@ -814,7 +822,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         accessorKey: 'LastStatus',
         header: 'Status',
         enableEditing: false,
-        size: 100,
+        size: 80,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'text',          
           error: validationErrors?.[cell.id],
@@ -836,9 +844,9 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       },
       {
         accessorKey: 'LastSendDate',
-        header: 'Send Date',
+        header: 'Send D',
         enableEditing: false,
-        size: 200,
+        size: 180,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'Date',          
           error: validationErrors?.[cell.id],
