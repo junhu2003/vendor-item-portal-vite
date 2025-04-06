@@ -8,7 +8,7 @@ import {
   type MRT_TableOptions,
   useMantineReactTable,
 } from 'mantine-react-table';
-import { ActionIcon, Button, Text, Tooltip, FileInput, MultiSelect, Switch } from '@mantine/core';
+import { ActionIcon, Button, Text, Tooltip, FileInput, MultiSelect, Switch, px } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import { IconTrash, IconSend, IconFileImport, IconInfoCircle } from '@tabler/icons-react';
 import {  
@@ -289,7 +289,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'Barcode',
         header: 'Barcode',
-        size: 100,
+        size: 150,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'text',
           required: true,
@@ -314,7 +314,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'ItemNumber',
         header: 'Item No.',
-        size: 100,
+        size: 150,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'text',
           required: true,
@@ -339,7 +339,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'ItemName',
         header: 'Name',
-        size: 128,
+        size: 150,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'text',
           required: true,
@@ -362,8 +362,8 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       },
       {
         accessorKey: 'ItemDesc',
-        header: 'Desc',
-        size: 150,
+        header: 'Description',
+        size: 180,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'text',
           required: true,
@@ -387,7 +387,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'UnitPrice',
         header: 'Unit P',
-        size: 80,
+        size: 150,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'number',
           required: true,
@@ -411,7 +411,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'UnitCost',
         header: 'Unit C',
-        size: 80,
+        size: 150,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'number',
           required: true,
@@ -465,7 +465,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'TaxCodeID',
         header: 'Tax Code',
-        size: 100,        
+        size: 150,
         editVariant: 'select',
         mantineEditSelectProps: ({ row }) => ({
           data: taxCodes,          
@@ -480,7 +480,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'ItemType',
         header: 'item Type',        
-        size: 100,
+        size: 150,
         editVariant: 'select',
         mantineEditSelectProps: ({ row }) => ({
           data: itemTypes,
@@ -495,7 +495,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'STS',
         header: 'STS',
-        size: 100,
+        size: 120,
         editVariant: 'select',
         mantineEditSelectProps: ({ row }) => ({
           data: itemStatuses,
@@ -525,7 +525,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: "ReportCode",
         header: "Report Codes",
-        size: 400, 
+        size: 500, 
         enableEditing: false,
         Cell: ({ row }) => {
           const curItem = editedItems[row.id] ? editedItems[row.id] : row.original;
@@ -549,7 +549,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: "ImageFileName",
         header: "File",
-        size: 80,
+        size: 120,
         enableEditing: false, // Prevent editing for file column
         Cell: ({ row }) => {              
           return (
@@ -769,103 +769,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
             />
           );
         },        
-      },
-      {
-        accessorKey: 'SdItemID',
-        header: 'SD ID',
-        enableEditing: false,
-        size: 80,
-        mantineEditTextInputProps: ({ cell, row }) => ({
-          type: 'text',          
-          error: validationErrors?.[cell.id],
-          //store edited item in state to be saved later
-          onBlur: (event) => {            
-            const validationError = !validateRequired(event.currentTarget.value)
-              ? 'Required'
-              : undefined;
-            setValidationErrors({
-              ...validationErrors,
-              [cell.id]: validationError,
-            });
-            setEditedItems({ 
-              ...editedItems,
-              [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), SdItemID: Number(event.currentTarget.value) },
-            });
-          },
-        }),
-      },
-      {
-        accessorKey: 'LastAction',
-        header: 'Act',
-        enableEditing: false,
-        size: 80,
-        mantineEditTextInputProps: ({ cell, row }) => ({
-          type: 'text',          
-          error: validationErrors?.[cell.id],
-          //store edited item in state to be saved later
-          onBlur: (event) => {            
-            const validationError = !validateRequired(event.currentTarget.value)
-              ? 'Required'
-              : undefined;
-            setValidationErrors({
-              ...validationErrors,
-              [cell.id]: validationError,
-            });
-            setEditedItems({ 
-              ...editedItems,
-              [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), LastAction: event.currentTarget.value },
-            });
-          },
-        }),
-      },
-      {
-        accessorKey: 'LastStatus',
-        header: 'Status',
-        enableEditing: false,
-        size: 80,
-        mantineEditTextInputProps: ({ cell, row }) => ({
-          type: 'text',          
-          error: validationErrors?.[cell.id],
-          //store edited item in state to be saved later
-          onBlur: (event) => {            
-            const validationError = !validateRequired(event.currentTarget.value)
-              ? 'Required'
-              : undefined;
-            setValidationErrors({
-              ...validationErrors,
-              [cell.id]: validationError,
-            });
-            setEditedItems({ 
-              ...editedItems,
-              [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), LastStatus: event.currentTarget.value },
-            });
-          },
-        }),
-      },
-      {
-        accessorKey: 'LastSendDate',
-        header: 'Send D',
-        enableEditing: false,
-        size: 180,
-        mantineEditTextInputProps: ({ cell, row }) => ({
-          type: 'Date',          
-          error: validationErrors?.[cell.id],
-          //store edited item in state to be saved later
-          onBlur: (event) => {            
-            const validationError = !validateRequired(event.currentTarget.value)
-              ? 'Required'
-              : undefined;
-            setValidationErrors({
-              ...validationErrors,
-              [cell.id]: validationError,
-            });
-            setEditedItems({ 
-              ...editedItems,
-              [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), LastSendDate: new Date(event.currentTarget.value) },
-            });
-          },
-        }),
-      },
+      },      
     ],
     [editedItems, validationErrors, depts, deptCategories, taxCodes, brands, rptCodes, 
       itemTypes, itemStatuses, selectedStore],
@@ -877,8 +781,17 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
     createDisplayMode: 'row', // ('modal', and 'custom' are also available)
     editDisplayMode: 'table', // ('modal', 'row', 'cell', and 'custom' are also available)
     enableEditing: true,
-    enableRowActions: true,    
-    positionActionsColumn: 'last',
+    enableRowActions: true,  
+    enableRowSelection: true,  
+    enableColumnResizing: true,
+    enableColumnOrdering: true,    
+    mantineTableBodyRowCheckboxProps:{
+      size: 'xs', // 👈 makes body checkbox smaller
+    },
+    mantineTableHeadRowCheckboxProps:{
+      size: 'xs', // 👈 makes header checkbox smaller
+    },
+    positionActionsColumn: 'first',
     getRowId: (row) => row.ItemID ? row.ItemID.toString() : undefined,
     mantineToolbarAlertBannerProps: isLoadingItemsError
       ? {
@@ -897,24 +810,31 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
     onCreatingRowCancel: () => setValidationErrors({}),
     onCreatingRowSave: handleCreateItem,
     renderRowActions: ({ row }) => (
-      <div className='flex items-centers space-x-2'>
-        <Tooltip label="Delete">
-          <ActionIcon style={{background: 'transparent'}} onClick={() => openDeleteConfirmModal(row)}>
-            <IconTrash color='red' />
+      <div className='flex items-centers space-x-1' style={{ width: '300px' }}>
+        <Tooltip label={(row.original.SdItemID ? ('SD Item No. ' + row.original.SdItemID) : '') + (row.original.LastSendDate ? ( ' ' + (row.original.LastAction ?? '') + ' ' + (row.original.LastStatus ?? '') + ' on ' +  row.original.LastSendDate?.toLocaleString()) : 'Send to SD')}>
+          <ActionIcon style={{background: 'transparent'}} onClick={() => openSendToSDConfirmModal(row)}>
+            <IconSend color={ row.original.LastStatus === 'Successed' ? 'blue' : (row.original.LastStatus === 'Failed' ? 'orange' : 'green')} />
           </ActionIcon>
-        </Tooltip>
+        </Tooltip>        
         <Tooltip label={ lastSendItemHistory ? lastSendItemHistory.ResponseMsg : ''}>
           <ActionIcon style={{background: 'transparent'}} onMouseEnter={() => getLastSendingHistory(Number(row.original.ItemID))} onMouseLeave={() => setLastSendItemHistory(null)}>
             <IconInfoCircle color='purple' />
           </ActionIcon>
         </Tooltip>
-        <Tooltip label="Send to SD">
-          <ActionIcon style={{background: 'transparent'}} onClick={() => openSendToSDConfirmModal(row)}>
-            <IconSend color='green' />
+        <Tooltip label="Delete">
+          <ActionIcon style={{background: 'transparent'}} onClick={() => openDeleteConfirmModal(row)}>
+            <IconTrash color='red' />
           </ActionIcon>
         </Tooltip>
       </div>
-    ),    
+    ),
+    displayColumnDefOptions:{
+      'mrt-row-actions': {
+        size: 100, // 👈 try 120–140px for 3 buttons
+        maxSize: 130,
+        minSize: 90,
+      },
+    },
     renderBottomToolbarCustomActions: () => (
       <Button
         color="blue"
