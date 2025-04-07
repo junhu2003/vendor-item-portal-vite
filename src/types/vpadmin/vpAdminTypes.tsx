@@ -1,6 +1,6 @@
 
 export type Users = {
-    UserID: string,
+    UserID: string | undefined,
 	Name: string,
 	Email: string,
 	Password: string,

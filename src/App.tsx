@@ -13,7 +13,7 @@ import { AuthProvider, ProtectedRoute } from './context/AuthContext';
 import LoginPage from './pages/Login';
 import MainLayout from './layouts/MainLayout';
 import Dashboard from './pages/Dashboard';
-import Profile from './pages/Profile';
+//import Profile from './pages/Profile';
 import Admins from './pages/Admins';
 import { Store } from './types/vpadmin/vpAdminTypes';
 
@@ -37,7 +37,7 @@ const App: React.FC = () => {
             }
           >
             <Route path="/dashboard" element={<Dashboard selectedStore={selectedStore} />} />
-            <Route path="/profile" element={<Profile />} />
+            {/*<Route path="/profile" element={<Profile />} />*/}
             <Route path="/admins" element={<Admins />} />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Route>

@@ -2,9 +2,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
-import { Checkbox, MantineProvider, createTheme } from '@mantine/core';
+import { MantineProvider, createTheme } from '@mantine/core';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ModalsProvider } from '@mantine/modals';
+import { Notifications } from '@mantine/notifications';
 
 const theme = createTheme({
   components: {
@@ -60,7 +61,8 @@ createRoot(document.getElementById('root')!).render(
     <MantineProvider theme={theme}>
       <QueryClientProvider client={queryClient}>
         <ModalsProvider>
-          <App />
+          <Notifications position="top-right" />
+            <App />          
         </ModalsProvider>
       </QueryClientProvider>
     </MantineProvider>    

@@ -5,7 +5,7 @@ import {
   CogIcon, 
   LogOutIcon, 
   ChevronsLeft, 
-  ChevronsRight 
+  ChevronsRight,
 } from 'lucide-react';
 import VendorPortalImg from '../assets/vendor-portal.png';
 import { Link, useLocation } from 'react-router-dom';
@@ -27,11 +27,11 @@ const ToggleableSidebar: React.FC<ToggleableSidebarProps> = ({
       icon: <HomeIcon className="w-5 h-5" />, 
       label: 'Dashboard' 
     },
-    { 
+    /*{ 
       path: '/profile', 
       icon: <UserIcon className="w-5 h-5" />, 
       label: 'Profile' 
-    },
+    },*/
     { 
       path: '/admins', 
       icon: <CogIcon className="w-5 h-5" />, 

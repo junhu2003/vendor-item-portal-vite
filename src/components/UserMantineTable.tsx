@@ -13,18 +13,23 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { ActionIcon, Button, Text, Tooltip } from '@mantine/core';
-import {modals } from '@mantine/modals';
-import { IconTrash } from '@tabler/icons-react';
+import { modals } from '@mantine/modals';
+import { IconTrash, IconKey, IconPasswordUser, IconX } from '@tabler/icons-react';
+import {   
+  LockIcon,
+  XIcon,
+} from 'lucide-react';
 import { UserLevel, Users } from '../types/vpadmin/vpAdminTypes';
 import { 
   GetAllVpUserLevels,
   CreateVpUser,
   UpdateVpUser,
-  DeleteVpUser,
-  GetAllVpUsers,
+  DeleteVpUser,  
   GetMyVpUsers,
   } from '../api/vp-item-api';
 import { useAuth } from '../context/AuthContext';
+import bcryptjs from 'bcryptjs';
+
 
 const UserMantineTable: React.FC = () => {
   const { loginUser } = useAuth(); //get logged in user from context  
@@ -32,6 +37,13 @@ const UserMantineTable: React.FC = () => {
   const [validationErrors, setValidationErrors] = useState<
   Record<string, string | undefined>
 >({});
+
+const [isChangeUserPwdModalOpen, setIsChangeUserPwdModalOpen] = useState(false);
+const [selUser, setSelUser] = useState<Users | null>(null); //user state for change password modal
+const [error, setError] = useState<string>(''); //error state for change password modal
+const [currentPwd, setCurrentPwd] = useState<string>(''); //password state for change password modal
+const [newPwd, setNewPwd] = useState<string>(''); //password state for change password modal
+const [confirmPwd, setConfirmPwd] = useState<string>(''); //password state for change password modal
 
 //keep track of rows that have been edited
 const [editedUsers, setEditedUsers] = useState<Record<string, Users>>({});
@@ -53,6 +65,59 @@ useEffect(() => {
 
   fetchData();
 }, []);
+
+const openModal = (user: Users) => {
+  setSelUser(user); //set selected user for change password modal
+  setIsChangeUserPwdModalOpen(true);
+}
+const closeModal = () => setIsChangeUserPwdModalOpen(false);
+
+const changeUserPassword = async (user: Users | null): Promise<boolean> => {
+  if (!user) return false; //check if user is null
+
+  const passwordsMatch = await bcryptjs.compare(currentPwd, user.Password);    
+  if (!passwordsMatch) {
+    setError('Current Password is incorrect');
+    return false;
+  } else {
+    setError('');
+  }
+
+  if (newPwd && newPwd.length < 6)  {
+    setError('New Password must be at least 6 characters long');
+    return false;
+  } else if ( newPwd !== confirmPwd) {  
+    setError('New Password and Confirm Password do not match');
+    return false;
+  } else {
+    setError('');
+  }
+  
+  user.Password = await bcryptjs.hash(newPwd, 10);
+  const isUpdateSuccess = await UpdateVpUser([user]);
+
+  setCurrentPwd('');
+  setNewPwd('');
+  setConfirmPwd('');  
+
+  if (isUpdateSuccess) {
+    setError('');
+  } else {
+    setError('Failed to update password');      
+    return false;
+  }
+
+  return true;
+}
+
+const resetUserPassword = async (user: Users): Promise<boolean> => {
+  if (!user) return false; //check if user is null  
+
+  user.Password = await bcryptjs.hash('123456', 10);
+  const isUpdateSuccess = await UpdateVpUser([user]);
+
+  return isUpdateSuccess;
+}
 
 //call CREATE hook
 const { mutateAsync: createUser, isPending: isCreatingUser } =
@@ -107,6 +172,26 @@ const openDeleteConfirmModal = (row: MRT_Row<Users>) =>
     confirmProps: { color: 'red' },
     onConfirm: () => deleteUser(row.original.UserID),
   });
+
+//Change User Password
+const openChangePasswordModal = (row: MRT_Row<Users>) =>  
+  openModal(row.original);
+
+//DELETE action
+const openResetPwdConfirmModal = (row: MRT_Row<Users>) =>
+  modals.openConfirmModal({
+    title: 'Password Reset',
+    children: (
+      <Text>
+        Are you sure you want to reset {row.original.Name} password to '123456'?
+         This action cannot be undone.
+      </Text>
+    ),
+    labels: { confirm: 'Reset', cancel: 'Cancel' },
+    confirmProps: { color: 'red' },
+    onConfirm: () => resetUserPassword(row.original),
+  });
+
 
 const columns = useMemo<MRT_ColumnDef<Users>[]>(    
   () => [          
@@ -202,11 +287,30 @@ const table = useMantineReactTable(
     onCreatingRowCancel: () => setValidationErrors({}),
     onCreatingRowSave: handleCreateUser,
     renderRowActions: ({ row }) => (
-      <Tooltip label="Delete">
-        <ActionIcon style={{background: 'transparent'}} onClick={() => openDeleteConfirmModal(row)}>
-          <IconTrash color='red' />
-        </ActionIcon>
-      </Tooltip>
+      <div className='flex items-centers space-x-1' style={{ width: '300px' }}>
+        { loginUser?.UserID !== row.original.UserID &&
+          <Tooltip label="Delete">
+            <ActionIcon style={{background: 'transparent'}} onClick={() => openDeleteConfirmModal(row)}>
+              <IconTrash color='red' />
+            </ActionIcon>
+          </Tooltip>
+        }
+        { loginUser?.UserID === row.original.UserID &&
+          <Tooltip label="Change Password">
+            <ActionIcon style={{background: 'transparent'}} onClick={() => openChangePasswordModal(row)}>
+              <IconKey color='blue' />
+            </ActionIcon>
+          </Tooltip>
+        }
+        {
+          loginUser?.UserID !== row.original.UserID &&
+          <Tooltip label="Reset Password">
+            <ActionIcon style={{background: 'transparent'}} onClick={() => openResetPwdConfirmModal(row)}>
+              <IconPasswordUser color='blue' />
+            </ActionIcon>
+          </Tooltip>
+        }
+      </div>
     ),
     renderBottomToolbarCustomActions: () => (
       <Button
@@ -222,15 +326,10 @@ const table = useMantineReactTable(
       </Button>
     ),
     renderTopToolbarCustomActions: ({ table }) => (
+      loginUser?.UserLevelID.toString() !== '3' &&
       <Button
         onClick={() => {
-          table.setCreatingRow(true); //simplest way to open the create row modal with no default values
-          //or you can pass in a row object to set default values with the `createRow` helper function
-          // table.setCreatingRow(
-          //   createRow(table, {
-          //     //optionally pass in default values for the new row, useful for nested data or other complex scenarios
-          //   }),
-          // );
+          table.setCreatingRow(true);
         }}
       >
         Create New User
@@ -244,7 +343,111 @@ const table = useMantineReactTable(
     },
   });
 
-  return <MantineReactTable table={table} />;
+  return ( 
+    <div>
+      <MantineReactTable table={table} />
+
+      {/* Modal Backdrop */}
+      {isChangeUserPwdModalOpen && (
+        <div className="fixed inset-0 z-10 flex items-center justify-center bg-black/40 bg-opacity-50">
+          {/* Modal Content */}
+          <div className="relative w-full max-w-md p-6 mx-4 bg-white rounded-lg shadow-xl">
+            {/* Modal Header */}
+            <div className="mb-4">
+              <h3 className="text-lg font-medium text-gray-900">Change User Password</h3>
+              <button
+                onClick={closeModal}
+                className="absolute p-1 text-gray-400 top-4 right-4 hover:text-gray-500"
+              >
+                <XIcon size={20} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="mb-6">
+              {error && error.length > 0  && (
+                  <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                    {error}
+                  </div>
+                )}
+              <div className="relative mb-4 mt-1">          
+                <input
+                  type="password"
+                  id="current-password"
+                  value={currentPwd}
+                  placeholder='Current Password'
+                  onChange={(e) => setCurrentPwd(e.target.value)}
+                  className="w-full pl-10 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required            
+                />
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                  <LockIcon size={20} />
+                </div>
+              </div>          
+              <div className="relative mb-6">            
+                <input
+                  type="password"
+                  id="new-password"
+                  value={newPwd}
+                  placeholder='New Password'
+                  onChange={(e) => setNewPwd(e.target.value)}
+                  className="w-full pl-10 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required            
+                />
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                  <LockIcon size={20} />
+                </div>
+              </div>
+              <div className="relative mb-6">            
+                <input
+                  type="password"
+                  id="confirm-password"
+                  value={confirmPwd}
+                  placeholder='Confirm Password'
+                  onChange={(e) => setConfirmPwd(e.target.value)}
+                  className="w-full pl-10 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required            
+                />
+                <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+                  <LockIcon size={20} />
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 20 }}>
+              <Button
+                color="gray"
+                variant="default"
+                onClick={() => {              
+                  setCurrentPwd('');
+                  setNewPwd('');  
+                  setConfirmPwd('');
+                  setError('');
+                  closeModal();
+                }}
+                style={{ marginRight: 10 }}
+              >
+                Cancel
+              </Button>
+              <Button
+                color="red"
+                onClick={async () => {
+                  const shouldClose = await changeUserPassword(selUser);
+                  if (shouldClose) {
+                    closeModal();
+                  }
+                }}
+              >
+                Confirm
+              </Button>              
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  
+  )
 };
 
 //CREATE hook (post new user to api)
@@ -287,6 +490,7 @@ return useQuery<Users[]>({
       Email: user.Email,
       Password: user.Password,
       UserLevelID: user.UserLevelID.toString(),
+      ManagerUserID: user.ManagerUserID,
       IsNewUser: user.IsNewUser,
     }));
     return users ? users : [];
@@ -301,12 +505,8 @@ const queryClient = useQueryClient();
 return useMutation({
   mutationFn: async (users: Users[]) => {
     //send api update request here
-    return await new Promise((resolve) => {
-      users.forEach(async (user) => {
-        const result = await UpdateVpUser(user);
-        resolve(result);  
-      });
-    });      
+    const result = await UpdateVpUser(users);
+    return result  
   },
   //client side optimistic update
   onMutate: (newUsers: Users[]) => {

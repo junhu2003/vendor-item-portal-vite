@@ -44,6 +44,7 @@ import {
 } from '../api/vp-item-api';
 import { useAuth } from '../context/AuthContext';
 import Toast from './Toast';
+import { showNotification } from '@mantine/notifications';
 
 
 const VpItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedStore}) => {

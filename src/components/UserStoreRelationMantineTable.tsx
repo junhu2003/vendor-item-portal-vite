@@ -182,6 +182,7 @@ const table = useMantineReactTable(
     onCreatingRowCancel: () => setValidationErrors({}),
     onCreatingRowSave: handleCreateUserStoreRelation,
     renderRowActions: ({ row }) => (
+      loginUser?.UserLevelID.toString() !== '3' && // check if user is admin
       <Tooltip label="Delete">
         <ActionIcon style={{background: 'transparent'}} onClick={() => openDeleteConfirmModal(row)}>
           <IconTrash color='red' />
@@ -202,15 +203,10 @@ const table = useMantineReactTable(
       </Button>
     ),
     renderTopToolbarCustomActions: ({ table }) => (
+      loginUser?.UserLevelID.toString() !== '3' && // check if user is admin
       <Button
         onClick={() => {
-          table.setCreatingRow(true); //simplest way to open the create row modal with no default values
-          //or you can pass in a row object to set default values with the `createRow` helper function
-          // table.setCreatingRow(
-          //   createRow(table, {
-          //     //optionally pass in default values for the new row, useful for nested data or other complex scenarios
-          //   }),
-          // );
+          table.setCreatingRow(true); 
         }}
       >
         Create New User & Store Relation
