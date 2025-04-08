@@ -8,9 +8,9 @@ import {
   type MRT_TableOptions,
   useMantineReactTable,
 } from 'mantine-react-table';
-import { ActionIcon, Button, Text, Tooltip, FileInput, MultiSelect, Switch, px } from '@mantine/core';
+import { ActionIcon, Button, Text, Tooltip, FileInput, MultiSelect, Switch } from '@mantine/core';
 import { modals } from '@mantine/modals';
-import { IconTrash, IconSend, IconFileImport, IconInfoCircle } from '@tabler/icons-react';
+import { IconTrash, IconSend, IconFileImport, IconInfoCircle, IconSelect, IconDeselect } from '@tabler/icons-react';
 import {  
   useMutation,
   useQuery,
@@ -36,6 +36,7 @@ import {
 } from '../api/sd-item-api';
 
 import { 
+  GetMyVpUsers,
   GetVpItems,
   CreateVpItems,
   UpdateVpItems,
@@ -169,7 +170,7 @@ const VpItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
     isError: isLoadingItemsError,
     isFetching: isFetchingItems,
     isLoading: isLoadingItems,
-  } = useGetItems(selectedStore);
+  } = useGetItems(selectedStore, loginUser);
   //call UPDATE hook
   const { mutateAsync: updateItems, isPending: isUpdatingItem } =
     useUpdateItems();
@@ -200,6 +201,18 @@ const VpItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
     setEditedItems({});
   };
 
+  // Send multiple itemsto SD action
+  const handleSendItems = async () => {
+    
+    const itemsToSend = table.getSelectedRowModel().rows.map((row) => {
+      return row.original;
+    });
+
+    if (itemsToSend.length > 0) {
+      await sendItemsToSD(itemsToSend, false);
+    }
+  };
+
   //DELETE action
   const openDeleteConfirmModal = (row: MRT_Row<item>) =>
     modals.openConfirmModal({
@@ -226,15 +239,14 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
     ),
     labels: { confirm: 'Send', cancel: 'Cancel' },
     confirmProps: { color: 'green' },
-    onConfirm: () => sendItemToSD(row.original),
+    onConfirm: () => sendItemsToSD([row.original]),
   });
 
-  const sendItemToSD = async (extItem: item) => {
+  const sendItemsToSD = async (extItemList: item[], isNotified: boolean = true) => {
 
-    extItem.LastSendDate = extItem.LastSendDate ? new Date(extItem.LastSendDate) : undefined;
     const extItems: ExtItems = {
-      PublicKey: selectedStore.HeadOfficeToken,
-      ExtItems: [{
+      PublicKey: selectedStore?.HeadOfficeToken,
+      ExtItems: extItemList.map(extItem => ({      
         ItemID: extItem.ItemID,
         DepartmentID: Number(extItem.DepartmentID),
         CategoryID: Number(extItem.CategoryID),
@@ -263,26 +275,37 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         //LastAction: extItem.LastAction,
         //LastSendDate: extItem.LastSendDate,
         CreatedDate: new Date(), // extItem.CreatedDate,
-        CreateUserID: extItem.CreateUserID
-      }]
-    };
+        CreateUserID: extItem.CreateUserID,
+        LastSendDate: extItem.LastSendDate ? new Date(extItem.LastSendDate) : undefined,
+      })
+    )};
     const resresponses: ExtItemResponse[] = await postItems(extItems);
 
     // refresh UI
     await queryClient.invalidateQueries(['items'])
 
-    resresponses.forEach(res => {
-      const status: "success" | "error" | "warning" | "info" = res.Status === 'Successed' ? 'success' : 'error';
+    if (isNotified) {
+      resresponses.forEach(res => {
+        // use toast instead of notification       
+        const status: "success" | "error" | "warning" | "info" = res.Status === 'Successed' ? 'success' : 'error';
+  
+        setToast(
+          <Toast 
+            message={ res.Message }
+            type={ status } 
+            duration={3000} 
+            onClose={() => setToast(null)} 
+          />
+        );  
 
-      setToast(
-        <Toast 
-          message={ res.Message }
-          type={ status } 
-          duration={3000} 
-          onClose={() => setToast(null)} 
-        />
-      );  
-    });
+        // use notification instead of toast        
+        /*showNotification({
+          // title: 'Items sent to SD',
+          message: res.Message,
+          color: res.Status === 'Successed' ? 'green' : 'red',
+        });*/
+      });
+    }    
   }
 
   const columns = useMemo<MRT_ColumnDef<item>[]>(    
@@ -296,7 +319,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
           required: true,
           error: validationErrors?.[cell.id],
           //store edited item in state to be saved later
-          onBlur: async (event) => {
+          onChange: async (event) => {
             const currentValue = event.currentTarget.value;
             const validationError = await validateBarcodeDuplication(selectedStore?.HeadOfficeToken, currentValue) 
                 ? 'Duplicate Barcodes' 
@@ -321,10 +344,10 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
           required: true,
           error: validationErrors?.[cell.id],
           //store edited item in state to be saved later
-          onBlur: async (event) => {
+          onChange: async (event) => {
             const currentValue = event.currentTarget.value;
             const validationError = await validateItemNumberDuplication(selectedStore?.HeadOfficeToken, currentValue) 
-                ? 'Duplicate Barcodes' 
+                ? 'Duplicate Item Numbers' 
                 : undefined;
             setValidationErrors({
               ...validationErrors,
@@ -783,7 +806,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
     editDisplayMode: 'table', // ('modal', 'row', 'cell', and 'custom' are also available)
     enableEditing: true,
     enableRowActions: true,  
-    enableRowSelection: true,  
+    enableRowSelection: true,    
     enableColumnResizing: true,
     enableColumnOrdering: true,    
     mantineTableBodyRowCheckboxProps:{
@@ -837,17 +860,30 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       },
     },
     renderBottomToolbarCustomActions: () => (
-      <Button
-        color="blue"
-        onClick={handleSaveItems}
-        disabled={
-          Object.keys(editedItems).length === 0 ||
-          Object.values(validationErrors).some((error) => !!error)
-        }
-        loading={isUpdatingItem}
-      >
-        Save
-      </Button>
+      <div className="flex items-center space-x-2">        
+        <Button
+          color="blue"
+          onClick={handleSaveItems}
+          disabled={
+            Object.keys(editedItems).length === 0 ||
+            Object.values(validationErrors).some((error) => !!error)
+          }
+          loading={isUpdatingItem}
+        >
+          Save items to Local
+        </Button>
+        <Button
+          color="blue"
+          onClick={handleSendItems}
+          disabled={
+            Object.keys(table.getSelectedRowModel().rows).length === 0 ||
+            Object.values(validationErrors).some((error) => !!error)
+          }
+          loading={isUpdatingItem}
+        >
+          Send items to SD
+        </Button>
+      </div>
     ),
     renderTopToolbarCustomActions: ({ table }) => (
       <Button
@@ -943,12 +979,20 @@ function useCreateItem(loginUser: Users) {
 }
 
 //READ hook (get items from api)
-function useGetItems(store: Store) {
+function useGetItems(store: Store, loginUser: Users) {
   return useQuery<item[]>({
     queryKey: ['items'],
     queryFn: async () => {
-      //send api request here      
-      const items = await GetVpItems(store.HeadOfficeToken, '');
+      //send api request here
+      let userIds = '';
+      if (loginUser.UserLevelID.toString() === '2') {
+        const userList = await GetMyVpUsers(loginUser.UserID?.toString());
+        userIds = userList.map((u) => u.UserID).join(',');
+      } else if (loginUser.UserLevelID.toString() === '3') {
+        userIds = loginUser.UserID?.toString();
+      }
+
+      const items = await GetVpItems(store.HeadOfficeToken, userIds);
       const list = items.map((t) => ({
         ItemID: t.ItemID,
         DepartmentID: t.DepartmentID ? t.DepartmentID.toString() : '',
