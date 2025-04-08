@@ -209,7 +209,7 @@ const VpItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
     });
 
     if (itemsToSend.length > 0) {
-      await sendItemsToSD(itemsToSend, false);
+      await sendItemsToSD(itemsToSend);
     }
   };
 
