@@ -286,7 +286,8 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
 
     if (isNotified) {
       resresponses.forEach(res => {
-        // use toast instead of notification       
+        // use toast instead of notification
+        /*       
         const status: "success" | "error" | "warning" | "info" = res.Status === 'Successed' ? 'success' : 'error';
   
         setToast(
@@ -296,14 +297,24 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
             duration={3000} 
             onClose={() => setToast(null)} 
           />
-        );  
+        );*/  
 
         // use notification instead of toast        
-        /*showNotification({
-          // title: 'Items sent to SD',
+        showNotification({
+          //title: 'Items sent to SD',
           message: res.Message,
           color: res.Status === 'Successed' ? 'green' : 'red',
-        });*/
+          autoClose: 3000,
+          styles: ({
+            root: {
+              fontSize: 18,
+              padding: 12,
+              maxWidth: '600px',
+              backgroundColor: '#d1d5db', // Tailwind "gray-100"
+              color: '#111827', // Tailwind "gray-900"              
+            },            
+          }),
+        });
       });
     }    
   }
