@@ -24,13 +24,14 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    contents: 'dist/**'
+    SourceFolder: 'dist'
+    contents: '**'
     targetFolder: '$(Build.ArtifactStagingDirectory)'
   displayName: 'Copy build output to staging'
 
 - task: ArchiveFiles@2
   inputs:
-    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/app'
     includeRootFolder: false
     archiveType: 'zip'
     archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
