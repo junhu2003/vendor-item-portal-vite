@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import {useAuth} from '../context/AuthContext';
 import { 
   CircleUserIcon,   
   StoreIcon, 
@@ -9,8 +8,7 @@ import UserMantineTable from '../components/UserMantineTable';
 import StoreMantineTable from '../components/StoreMantineTable';
 import UserStoreRelationMantineTable from '../components/UserStoreRelationMantineTable';
 
-const Admins: React.FC = () => {
-  const { user } = useAuth();  
+const Admins: React.FC = () => {  
   const [activeTab, setActiveTab] = useState('user');
 
   const handleTabClick = (tabId: string, e: any) => {

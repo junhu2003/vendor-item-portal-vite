@@ -4,9 +4,9 @@ import {
     Category, 
     TaxCode, 
     Brand, 
-    ReportCode, 
-    ExtItems, 
+    ReportCode,      
     ExtItemResponse } from "../types/sditem/sdItemTypes";
+import { ExtItem } from "../types/vpadmin/vpAdminTypes";
 
 const apiBaseUrl = import.meta.env.VITE_API_URL;
 
@@ -142,7 +142,7 @@ export async function getItemStatuses(): Promise<string[]> {
     return response.json();
 }
 
-export async function postItems(extItems: ExtItems): Promise<ExtItemResponse[]> {
+export async function postItems(extItems: ExtItem): Promise<ExtItemResponse[]> {
     const reqUrl = apiBaseUrl  + '/api/SdItem/v1/PostItems';
     const response = await fetch(reqUrl, { 
         method: 'POST', 

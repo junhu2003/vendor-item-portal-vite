@@ -1,4 +1,4 @@
-import { ExtItemResponse } from '../types/sditem/vpItemTypes';
+import { ExtItemResponse } from '../types/sditem/sdItemTypes';
 import { Users, 
     UserLevel, 
     Store, 
@@ -26,7 +26,7 @@ export async function GetAllVpUsers(): Promise<Users[]> {
     }
 }
 
-export async function GetMyVpUsers(myUserID: string): Promise<Users[]> {
+export async function GetMyVpUsers(myUserID: string | null): Promise<Users[]> {
     var reqUrl = apiBaseUrl + '/api/VpItem/v1/GetMyVpUsers?myUserID=' + myUserID;    
     const response = await fetch(reqUrl, { 
         method: 'GET', 

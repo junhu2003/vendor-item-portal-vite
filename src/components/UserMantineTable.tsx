@@ -14,7 +14,7 @@ import {
 } from '@tanstack/react-query';
 import { ActionIcon, Button, Text, Tooltip } from '@mantine/core';
 import { modals } from '@mantine/modals';
-import { IconTrash, IconKey, IconPasswordUser, IconX } from '@tabler/icons-react';
+import { IconTrash, IconKey, IconPasswordUser } from '@tabler/icons-react';
 import {   
   LockIcon,
   XIcon,
@@ -170,7 +170,7 @@ const openDeleteConfirmModal = (row: MRT_Row<Users>) =>
     ),
     labels: { confirm: 'Delete', cancel: 'Cancel' },
     confirmProps: { color: 'red' },
-    onConfirm: () => deleteUser(row.original.UserID),
+    onConfirm: () => deleteUser(row.original.UserID ?? ''),
   });
 
 //Change User Password
@@ -275,12 +275,7 @@ const table = useMantineReactTable(
           color: 'red',
           children: 'Error loading data',
         }
-      : undefined,
-    mantineTableContainerProps: {
-      sx: {
-        minHeight: '500px',
-      },
-    },
+      : undefined,    
     mantineTableProps: {     
       className: 'custom-table',
     },
@@ -483,7 +478,7 @@ return useQuery<Users[]>({
   queryKey: ['users'],
   queryFn: async () => {
     //send api request here
-    const list = await GetMyVpUsers(loginUser.UserID);
+    const list = loginUser.UserID ? await GetMyVpUsers(loginUser.UserID) : [];
     const users = list?.map((user) => ({
       UserID: user.UserID,
       Name: user.Name,

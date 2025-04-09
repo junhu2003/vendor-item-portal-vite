@@ -19,8 +19,7 @@ import { Store, Users } from '../types/vpadmin/vpAdminTypes';
 import {   
   CreateStore,
   UpdateStores,
-  DeleteStore,
-  GetAllStores,
+  DeleteStore,  
   GetUserStores,
   } from '../api/vp-item-api';
 import { useAuth } from '../context/AuthContext';
@@ -199,18 +198,13 @@ const table = useMantineReactTable(
     enableEditing: true,
     enableRowActions: true,
     positionActionsColumn: 'last',
-    getRowId: (row) => row.StoreID,
+    getRowId: (row) => row.StoreID ? row.StoreID.toString() : '',
     mantineToolbarAlertBannerProps: isLoadingStoresError
       ? {
           color: 'red',
           children: 'Error loading data',
         }
-      : undefined,
-    mantineTableContainerProps: {
-      sx: {
-        minHeight: '500px',
-      },
-    },    
+      : undefined,    
     mantineTableProps: {     
       className: 'custom-table',
     },
@@ -286,12 +280,12 @@ return useMutation({
 }
 
 //READ hook (get users from api)
-function useGetStores(loginUser: Users) {
+function useGetStores(loginUser: Users | null) {
 return useQuery<Store[]>({
   queryKey: ['stores'],
   queryFn: async () => {
     //send api request here
-    const stores = await GetUserStores(loginUser.UserID);    
+    const stores = loginUser && loginUser.UserID ? await GetUserStores(loginUser.UserID) : [];    
     return stores;
 
   },
@@ -345,13 +339,6 @@ return useMutation({
 }
 
 const validateRequired = (value: string) => !!value?.length;
-const validateEmail = (email: string) =>
-!!email.length &&
-email
-  .toLowerCase()
-  .match(
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-  );
 
 function validateStore(store: Store) {
 return {

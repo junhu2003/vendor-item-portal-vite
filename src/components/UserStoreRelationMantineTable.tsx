@@ -19,8 +19,7 @@ import { Users, Store, UserStoreRelation } from '../types/vpadmin/vpAdminTypes';
 import {   
   CreateUserStoreRelation,
   UpdateUserStoreRelations,
-  DeleteUserStoreRelation,
-  GetAllUserStoreRelations,
+  DeleteUserStoreRelation,  
   GetMyUserStoreRelations,
   GetAllVpUsers,
   GetAllStores,
@@ -46,7 +45,7 @@ useEffect(() => {
     const userData: Users[] = await GetAllVpUsers();
     let userLabelList: { label: string, value: string }[]
       = userData.map((c) => ({
-          value: c.UserID.toString(),
+          value: c.UserID ? c.UserID.toString() : '',
           label: c.Name,
         }));
     setUserLabels(userLabelList);      
@@ -164,18 +163,13 @@ const table = useMantineReactTable(
     enableEditing: true,
     enableRowActions: true,
     positionActionsColumn: 'last',
-    getRowId: (row) => row.RelationID,
+    getRowId: (row) => row.RelationID ? row.RelationID.toString() : '',
     mantineToolbarAlertBannerProps: isLoadingUserStoreRelationsError
       ? {
           color: 'red',
           children: 'Error loading data',
         }
-      : undefined,
-    mantineTableContainerProps: {
-      sx: {
-        minHeight: '500px',
-      },
-    },
+      : undefined,    
     mantineTableProps: {     
       className: 'custom-table',
     },
@@ -251,12 +245,12 @@ return useMutation({
 }
 
 //READ hook (get users from api)
-function useGetUserStoreRelations(loginUser: Users) {
+function useGetUserStoreRelations(loginUser: Users | null) {
   return useQuery<UserStoreRelation[]>({
     queryKey: ['relations'],
     queryFn: async () => {
       //send api request here
-      const relationData = await GetMyUserStoreRelations(loginUser.UserID);
+      const relationData = loginUser && loginUser.UserID ? await GetMyUserStoreRelations(loginUser.UserID) : [];
       const relations: UserStoreRelation[] = relationData.map((relation) => (
         {
           RelationID: relation.RelationID,
@@ -316,14 +310,6 @@ return useMutation({
 }
 
 const validateRequired = (value: string) => !!value?.length;
-const validateEmail = (email: string) =>
-!!email.length &&
-email
-  .toLowerCase()
-  .match(
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-  );
-
 function validateUserStoreRelation(relation: UserStoreRelation) {
 return {
   UserID: !validateRequired(relation.UserID)

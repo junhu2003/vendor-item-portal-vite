@@ -17,14 +17,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({ changeSelectedStore }) => {
 
   useEffect(() => {
     const fetchData = async () => {    
-  
-      // retrieve user stores
-      const storeData: Store[] = await GetUserStores(loginUser?.UserID);
-      setStores(storeData);
-      if (storeData.length > 0) {
-        changeSelectedStore(storeData[0]);
-        setSelectedStore(storeData[0]);
-      }
+      
+      if (loginUser && loginUser.UserID) {
+        // retrieve user stores
+        const storeData: Store[] = await GetUserStores(loginUser?.UserID);
+        setStores(storeData);
+        if (storeData.length > 0) {
+          changeSelectedStore(storeData[0]);
+          setSelectedStore(storeData[0]);
+        }
+      }      
     };
   
     fetchData();

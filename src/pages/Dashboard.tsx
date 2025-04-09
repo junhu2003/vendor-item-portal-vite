@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Store } from '../types/vpadmin/vpAdminTypes';
 
 import VpItemMantineTable from '../components/VpItemMantineTable';

@@ -4,19 +4,14 @@ import { Department,
     DeptCategories,      
     TaxCode, 
     Brand, 
-    ReportCode, 
-    ExtItems, 
-    ExtItemResponse } from '../types/sditem/sdItemTypes';    
+    ReportCode } from '../types/sditem/sdItemTypes';    
 import { getDepartments, 
   getALLCategories, 
   getTaxCodes, 
   getBrands, 
   getReportCodes, 
   getItemTypes,
-  getItemStatuses,
-  postItems,
-  barcodesDuplicationCheck,
-  itemNumberDuplicationCheck } from '../api/sd-item-api';
+  getItemStatuses } from '../api/sd-item-api';
 
 
 export async function getDeptLabels(publicToken: string): Promise<{label: string, value: string}[]> {

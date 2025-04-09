@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { 
-  HomeIcon, 
-  UserIcon, 
+  HomeIcon,   
   CogIcon, 
   LogOutIcon, 
   ChevronsLeft, 

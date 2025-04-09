@@ -29,7 +29,7 @@ export type UserStoreRelation = {
 };
 
 export type item = {
-    ItemID?: number | string,
+    ItemID: number | string,
     DepartmentID?: number | string,
     CategoryID?: any,
     ItemName?: string,
@@ -76,7 +76,7 @@ export type SendItemStatus = {
     status: string;
 }
 
-export type ExtItems = {
+export type ExtItem = {
     PublicKey: string;
     ExtItems: item[]; 
 }
