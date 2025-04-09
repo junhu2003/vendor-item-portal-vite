@@ -8,9 +8,11 @@ export default defineConfig({
   css: {
     postcss: './postcss.config.js',
   },
+  base: '/', // Important for Azure
   // Fix for portal rendering
   build: {
     target: 'esnext',
-    polyfillModulePreload: false
+    polyfillModulePreload: false,
+    outDir: 'dist'
   }
 })
