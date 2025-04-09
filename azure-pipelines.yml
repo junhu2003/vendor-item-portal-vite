@@ -37,6 +37,12 @@ steps:
     replaceExistingArchive: true
   displayName: 'Zip build output'
 
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathToPublish: '$(Build.ArtifactStagingDirectory)/app.zip'
+    artifactName: 'drop'
+  displayName: 'Publish build artifacts'
+  
 - task: AzureWebApp@1
   inputs:
     azureSubscription: 'roger-service-connection'
