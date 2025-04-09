@@ -8,7 +8,6 @@ trigger:
     include:
       - main
 
-
 pool:
   vmImage: ubuntu-latest
 
@@ -25,19 +24,22 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-      contents: 'dist/**'
-      targetFolder: '$(Build.ArtifactStagingDirectory)'
+    contents: 'dist/**'
+    targetFolder: '$(Build.ArtifactStagingDirectory)'
   displayName: 'Copy build output to staging'
 
-- task: PublishBuildArtifacts@1
+- task: ArchiveFiles@2
   inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: 'drop'
-  displayName: 'Publish build artifacts'
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/app.zip'
+    replaceExistingArchive: true
+  displayName: 'Zip build output'
 
 - task: AzureWebApp@1
   inputs:
-      azureSubscription: 'roger-service-connection'
-      appName: 'test-vendor-portal-web'
-      package: '$(Build.ArtifactStagingDirectory)/**/*.zip' # or point to dist if not zipped
+    azureSubscription: 'roger-service-connection'
+    appName: 'test-vendor-portal-web'
+    package: '$(Build.ArtifactStagingDirectory)/app.zip'
   displayName: 'Deploy to Azure App Service'
