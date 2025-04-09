@@ -37,7 +37,7 @@ steps:
 
 - task: AzureWebApp@1
   inputs:
-      azureSubscription: 'junhu2003'
+      azureSubscription: 'roger-service-connection'
       appName: 'test-vendor-portal-web'
       package: '$(Build.ArtifactStagingDirectory)/**/*.zip' # or point to dist if not zipped
   displayName: 'Deploy to Azure App Service'
