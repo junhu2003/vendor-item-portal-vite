@@ -121,7 +121,7 @@ const resetUserPassword = async (user: Users): Promise<boolean> => {
 
 //call CREATE hook
 const { mutateAsync: createUser, isPending: isCreatingUser } =
-  useCreateUser();
+  useCreateUser(loginUser);
 //call READ hook
 const {
   data: fetchedUsers = [],
@@ -446,11 +446,13 @@ const table = useMantineReactTable(
 };
 
 //CREATE hook (post new user to api)
-function useCreateUser() {
+function useCreateUser(loginUser: Users | null) {
 const queryClient = useQueryClient();
 return useMutation({
   mutationFn: async (user: Users) => {
     //send api create request here
+    user.ManagerUserID = loginUser?.UserID ?? ''; //set manager user id to logged in user id
+    user.IsNewUser = true; //set new user flag to true
     const result = await CreateVpUser(user);
     return result;    
   },

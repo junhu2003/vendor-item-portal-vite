@@ -85,8 +85,9 @@ export async function CreateVpUser(user: Users): Promise<boolean> {
         Name: user.Name,
         Email: user.Email,
         Password: await bcryptjs.hash('123456', 10),
+        ManagerUserID: user.ManagerUserID,
         UserLevelID: user.UserLevelID,
-        IsNewUser: true
+        IsNewUser: user.IsNewUser,
     };
     const response = await fetch(reqUrl, { 
         method: 'POST', 
