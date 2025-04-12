@@ -2,6 +2,7 @@ import { ExtItemResponse } from '../types/sditem/sdItemTypes';
 import { Users, 
     UserLevel, 
     Store, 
+    StoreCreation,
     UserStoreRelation, 
     item, 
     SendItemHistory } from '../types/vpadmin/vpAdminTypes';
@@ -174,7 +175,7 @@ export async function UpdateStores(stores: Store[]): Promise<boolean> {
     }
 }
 
-export async function CreateStore(store: Store): Promise<boolean> {
+export async function CreateStore(storeCreator: StoreCreation): Promise<boolean> {
     var reqUrl = apiBaseUrl + '/api/VpItem/v1/CreateStore';    
     const response = await fetch(reqUrl, { 
         method: 'POST', 
@@ -184,7 +185,7 @@ export async function CreateStore(store: Store): Promise<boolean> {
             Accept: 'application/json',
             'Content-Type': 'application/json',
         }, 
-        body: JSON.stringify(store)});
+        body: JSON.stringify(storeCreator)});
     if (response.ok && response.status === 200) {
         return response.json();
     } else {

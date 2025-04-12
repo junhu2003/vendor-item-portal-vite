@@ -26,7 +26,7 @@ import {
   UpdateVpUser,
   DeleteVpUser,  
   GetMyVpUsers,
-  } from '../api/vp-item-api';
+  } from '../api/vp-item-api';  
 import { useAuth } from '../context/AuthContext';
 import bcryptjs from 'bcryptjs';
 
@@ -50,6 +50,7 @@ const [editedUsers, setEditedUsers] = useState<Record<string, Users>>({});
 
 const [userLevels, setUserLevels] = useState<{ label: string, value: string }[]>([]);
 
+const queryClient = useQueryClient();
 useEffect(() => {
   const fetchData = async () => {    
 
@@ -64,6 +65,7 @@ useEffect(() => {
   };
 
   fetchData();
+  queryClient.invalidateQueries({ queryKey: ['users'] })
 }, []);
 
 const openModal = (user: Users) => {
@@ -241,10 +243,10 @@ const columns = useMemo<MRT_ColumnDef<Users>[]>(
         },
       }),
     },      
-    {
+    /*{
       accessorKey: 'UserLevelID',
       header: 'User Level',
-      editable: true,
+      editable: false,
       editVariant: 'select',
       mantineEditSelectProps: ({ row }) => ({
         data: userLevels,
@@ -255,7 +257,7 @@ const columns = useMemo<MRT_ColumnDef<Users>[]>(
             [row.id]: { ...(editedUsers[row.id] ? editedUsers[row.id] : row.original), UserLevelID: value },
           }),
       }),
-    },      
+    },*/      
   ],
   [editedUsers, validationErrors, userLevels],
 );
@@ -451,9 +453,14 @@ const queryClient = useQueryClient();
 return useMutation({
   mutationFn: async (user: Users) => {
     //send api create request here
+    if (loginUser?.UserLevelID === '1') {
+      user.UserLevelID = '2';
+    } else if (loginUser?.UserLevelID === '2') {
+      user.UserLevelID = '3';
+    }    
     user.ManagerUserID = loginUser?.UserID ?? ''; //set manager user id to logged in user id
     user.IsNewUser = true; //set new user flag to true
-    const result = await CreateVpUser(user);
+    const result = await CreateVpUser(user);    
     return result;    
   },
   //client side optimistic update
@@ -502,7 +509,7 @@ const queryClient = useQueryClient();
 return useMutation({
   mutationFn: async (users: Users[]) => {
     //send api update request here
-    const result = await UpdateVpUser(users);
+    const result = await UpdateVpUser(users);    
     return result  
   },
   //client side optimistic update
@@ -526,7 +533,7 @@ const queryClient = useQueryClient();
 return useMutation({
   mutationFn: async (userId: string) => {
     //send api update request here
-    const result = await DeleteVpUser(userId);
+    const result = await DeleteVpUser(userId);    
     return result;    
   },
   //client side optimistic update

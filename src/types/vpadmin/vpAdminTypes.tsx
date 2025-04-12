@@ -81,4 +81,9 @@ export type ExtItem = {
     ExtItems: item[]; 
 }
 
+export type StoreCreation = {
+    NewStore?: Store,
+    CreateUser: Users | null,
+}
+
 

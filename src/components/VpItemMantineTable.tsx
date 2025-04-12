@@ -282,7 +282,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
     const resresponses: ExtItemResponse[] = await postItems(extItems);
 
     // refresh UI
-    await queryClient.invalidateQueries({ queryKey: ['items', selectedStore] })
+    await queryClient.invalidateQueries({ queryKey: ['items'] })
 
     if (isNotified) {
       resresponses.forEach(res => {
@@ -982,7 +982,7 @@ function useCreateItem(loginUser: Users | null) {
 //READ hook (get items from api)
 function useGetItems(store: Store | null, loginUser: Users | null) {
   return useQuery<item[]>({
-    queryKey: ['items', store],
+    queryKey: ['items'],
     queryFn: async () => {
       //send api request here
       let userIds = '';

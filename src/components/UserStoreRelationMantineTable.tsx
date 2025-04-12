@@ -21,13 +21,13 @@ import {
   UpdateUserStoreRelations,
   DeleteUserStoreRelation,  
   GetMyUserStoreRelations,
-  GetAllVpUsers,
-  GetAllStores,
-  } from '../api/vp-item-api';
+  GetMyVpUsers,
+  GetUserStores,
+  } from '../api/vp-item-api';  
   import { useAuth } from '../context/AuthContext';
 
 const UserStoreRelationMantineTable: React.FC = () => {
-const { loginUser } = useAuth();
+  const { loginUser } = useAuth();
 
   const [validationErrors, setValidationErrors] = useState<
   Record<string, string | undefined>
@@ -38,11 +38,12 @@ const [editedUserStoreRelations, setEditedUserStoreRelations] = useState<Record<
 const [userLabels, setUserLabels] = useState<{ label: string, value: string }[]>([]);
 const [storeLabels, setStoreLabels] = useState<{ label: string, value: string }[]>([]);
 
+const queryClient = useQueryClient();
 useEffect(() => {
   const fetchData = async () => {    
 
     // retrieve users
-    const userData: Users[] = await GetAllVpUsers();
+    const userData: Users[] = await GetMyVpUsers(loginUser?.UserID ? loginUser?.UserID : '');
     let userLabelList: { label: string, value: string }[]
       = userData.map((c) => ({
           value: c.UserID ? c.UserID.toString() : '',
@@ -51,16 +52,17 @@ useEffect(() => {
     setUserLabels(userLabelList);      
 
     // retrieve stores
-    const storeData: Store[] = await GetAllStores();
+    const storeData: Store[] = await GetUserStores(loginUser?.UserID ? loginUser?.UserID : '');
     let storeLabelList: { label: string, value: string }[]
       = storeData.map((c) => ({
           value: c.StoreID.toString(),
           label: c.StoreName,
         }));
-    setStoreLabels(storeLabelList);      
+    setStoreLabels(storeLabelList);        
   };
 
   fetchData();
+  queryClient.invalidateQueries({ queryKey: ['relations'] })
 }, []);
 
 
@@ -72,7 +74,7 @@ const {
   data: fetchedUserStoreRelations = [],
   isError: isLoadingUserStoreRelationsError,
   isFetching: isFetchingUserStoreRelations,
-  isLoading: isLoadingUserStoreRelations,
+  isLoading: isLoadingUserStoreRelations,   
 } = useGetUserStoreRelations(loginUser);
 //call UPDATE hook
 const { mutateAsync: updateUserStoreRelations, isPending: isUpdatingUserStoreRelation } =
@@ -223,7 +225,7 @@ const queryClient = useQueryClient();
 return useMutation({
   mutationFn: async (relation: UserStoreRelation) => {
     //send api create request here
-    const result = await CreateUserStoreRelation(relation);
+    const result = await CreateUserStoreRelation(relation);    
     return result;    
   },
   //client side optimistic update
@@ -270,7 +272,7 @@ const queryClient = useQueryClient();
 return useMutation({
   mutationFn: async (relations: UserStoreRelation[]) => {
     //send api update request here
-    const result = await UpdateUserStoreRelations(relations);
+    const result = await UpdateUserStoreRelations(relations);    
     return result;
   },
   //client side optimistic update
@@ -294,7 +296,7 @@ const queryClient = useQueryClient();
 return useMutation({
   mutationFn: async (relationId: number) => {
     //send api update request here
-    const result = await DeleteUserStoreRelation(relationId);
+    const result = await DeleteUserStoreRelation(relationId);    
     return result;    
   },
   //client side optimistic update

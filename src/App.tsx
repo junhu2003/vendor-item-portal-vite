@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import '@mantine/core/styles.css'; //import Mantine V7 styles needed by MRT
 import '@mantine/dates/styles.css'; //if using mantine date picker features
@@ -19,8 +19,12 @@ import { Store } from './types/vpadmin/vpAdminTypes';
 
 const App: React.FC = () => {
   const [selectedStore, setSelectedStore] = React.useState<Store | null>(null);
+  const [refreshStoreDropdown, setRefreshStoreDropdown] = useState(false);
   const changeSelectedStore = (store: Store) => {
     setSelectedStore(store);
+  }
+  const noticeRefreshStoreDropdown = () => {
+    setRefreshStoreDropdown(!refreshStoreDropdown);
   }
     // Logic to adjust sidebar space
 
@@ -32,13 +36,13 @@ const App: React.FC = () => {
           <Route 
             element={
               <ProtectedRoute>
-                <MainLayout changeSelectedStore={changeSelectedStore} />
+                <MainLayout changeSelectedStore={changeSelectedStore} refreshStoreDropdown={refreshStoreDropdown} />
               </ProtectedRoute>
             }
           >
             <Route path="/dashboard" element={<Dashboard selectedStore={selectedStore} />} />
             {/*<Route path="/profile" element={<Profile />} />*/}
-            <Route path="/admins" element={<Admins />} />
+            <Route path="/admins" element={<Admins noticeRefreshStoreDropdown={ noticeRefreshStoreDropdown } />} />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
           </Route>
         </Routes>

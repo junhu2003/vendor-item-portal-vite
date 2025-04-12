@@ -5,8 +5,8 @@ import { useAuth } from '../context/AuthContext';
 import { Store } from '../types/vpadmin/vpAdminTypes';
 import { GetUserStores } from '../api/vp-item-api';
 import { MainLayoutProps } from '../types/layouts/MainLayoutTypes';
-
-const MainLayout: React.FC<MainLayoutProps> = ({ changeSelectedStore }) => {
+  
+  const MainLayout: React.FC<MainLayoutProps> = ({ changeSelectedStore, refreshStoreDropdown }) => {
   const { loginUser } = useAuth();
   const [isExpanded, setIsExpanded] = useState(true);
   const [pageTitle, setPageTitle] = useState('Dashboard');
@@ -30,7 +30,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ changeSelectedStore }) => {
     };
   
     fetchData();
-  }, [loginUser]);
+  }, [loginUser, refreshStoreDropdown]);
 
   const toggleDropdown = () => setIsOpen(!isOpen);
   

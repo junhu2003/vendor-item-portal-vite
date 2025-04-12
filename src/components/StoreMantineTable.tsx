@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   MantineReactTable,
   // createRow,
@@ -15,27 +15,36 @@ import {
 import { ActionIcon, Button, Text, Tooltip } from '@mantine/core';
 import {modals } from '@mantine/modals';
 import { IconTrash } from '@tabler/icons-react';
-import { Store, Users } from '../types/vpadmin/vpAdminTypes';
+import { Store, StoreCreation, Users } from '../types/vpadmin/vpAdminTypes';
 import {   
   CreateStore,
   UpdateStores,
   DeleteStore,  
   GetUserStores,
   } from '../api/vp-item-api';
+import { StoreMantineTableProps } from '../types/components/StoreMantineTableTypes';
+import { formatToGuid } from '../helper/help-functions';  
 import { useAuth } from '../context/AuthContext';
 
-const StoreMantineTable: React.FC = () => {
+const StoreMantineTable: React.FC<StoreMantineTableProps> = ({noticeRefreshStoreDropdown}) => {
 const { loginUser } = useAuth();
 
-  const [validationErrors, setValidationErrors] = useState<
+const [validationErrors, setValidationErrors] = useState<
   Record<string, string | undefined>
 >({});
+
 //keep track of rows that have been edited
 const [editedStores, setEditedStores] = useState<Record<string, Store>>({});
 
+const queryClient = useQueryClient();
+useEffect(() => {
+  queryClient.invalidateQueries({ queryKey: ['stores'] })
+}, []);
+
+
 //call CREATE hook
 const { mutateAsync: createStore, isPending: isCreatingStore } =
-  useCreateStore();
+  useCreateStore(loginUser, noticeRefreshStoreDropdown);
 //call READ hook
 const {
   data: fetchedStores = [],
@@ -45,10 +54,10 @@ const {
 } = useGetStores(loginUser);
 //call UPDATE hook
 const { mutateAsync: updateStores, isPending: isUpdatingStore } =
-  useUpdateUsers();
+  useUpdateStores(noticeRefreshStoreDropdown);
 //call DELETE hook
 const { mutateAsync: deleteStore, isPending: isDeletingStore } =
-  useDeleteStore();
+  useDeleteStore(noticeRefreshStoreDropdown);
 
 //CREATE action
 const handleCreateStore: MRT_TableOptions<Store>['onCreatingRowSave'] = async ({
@@ -253,21 +262,30 @@ const table = useMantineReactTable(
 };
 
 //CREATE hook (post new user to api)
-function useCreateStore() {
+function useCreateStore(loginUser: Users | null, noticeRefreshStoreDropdown: any) {
 const queryClient = useQueryClient();
 return useMutation({
   mutationFn: async (store: Store) => {
-    //send api create request here
-    const result = await CreateStore(store);
+    //send api create request here  
+    store.StoreToken = formatToGuid(store.StoreToken);
+    store.HeadOfficeToken = formatToGuid(store.HeadOfficeToken);  
+    const storeCreator: StoreCreation = { 
+      NewStore: store,     
+      CreateUser: loginUser,
+    };
+    const result = await CreateStore(storeCreator);
+    if (result) {
+      noticeRefreshStoreDropdown();
+    }
     return result;    
   },
   //client side optimistic update
   onMutate: (newStoreInfo: Store) => {
     queryClient.setQueryData(
       ['stores'],
-      (prevUsers: any) =>
+      (prevStores: any) =>
         [
-          ...prevUsers,
+          ...prevStores,
           {
             ...newStoreInfo,
             id: (Math.random() + 1).toString(36).substring(7),
@@ -294,12 +312,15 @@ return useQuery<Store[]>({
 }
 
 //UPDATE hook (put users in api)
-function useUpdateUsers() {
+function useUpdateStores(noticeRefreshStoreDropdown: any) {
 const queryClient = useQueryClient();
 return useMutation({
   mutationFn: async (stores: Store[]) => {
     //send api update request here
     const result = await UpdateStores(stores);
+    if (result) {
+      noticeRefreshStoreDropdown();      
+    }
     return result;
   },
   //client side optimistic update
@@ -318,12 +339,15 @@ return useMutation({
 }
 
 //DELETE hook (delete store in api)
-function useDeleteStore() {
+function useDeleteStore(noticeRefreshStoreDropdown: any) {
 const queryClient = useQueryClient();
 return useMutation({
   mutationFn: async (storeId: number) => {
     //send api update request here
     const result = await DeleteStore(storeId);
+    if (result) {
+      noticeRefreshStoreDropdown();      
+    }
     return result;    
   },
   //client side optimistic update

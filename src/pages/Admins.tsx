@@ -4,12 +4,13 @@ import {
   StoreIcon, 
   CableIcon,   
 } from 'lucide-react';
+import { AdminsProps } from '../types/pages/AdminsTypes';
 import UserMantineTable from '../components/UserMantineTable';
 import StoreMantineTable from '../components/StoreMantineTable';
 import UserStoreRelationMantineTable from '../components/UserStoreRelationMantineTable';
 
-const Admins: React.FC = () => {  
-  const [activeTab, setActiveTab] = useState('user');
+const Admins: React.FC<AdminsProps> = ({ noticeRefreshStoreDropdown }) => {  
+  const [activeTab, setActiveTab] = useState('user');  
 
   const handleTabClick = (tabId: string, e: any) => {
     e.preventDefault();
@@ -72,7 +73,7 @@ const Admins: React.FC = () => {
         
         {activeTab === 'store' && (
           <div>
-            <StoreMantineTable />
+            <StoreMantineTable noticeRefreshStoreDropdown={noticeRefreshStoreDropdown} />
           </div>
         )}
         
