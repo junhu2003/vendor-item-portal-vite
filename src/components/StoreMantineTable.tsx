@@ -22,8 +22,9 @@ import {
   DeleteStore,  
   GetUserStores,
   } from '../api/vp-item-api';
+import { IsStoreExistByPublicToken } from '../api/sd-item-api';
 import { StoreMantineTableProps } from '../types/components/StoreMantineTableTypes';
-import { formatToGuid } from '../helper/help-functions';  
+import { formatToGuid, isValidGuid } from '../helper/help-functions';  
 import { useAuth } from '../context/AuthContext';
 
 const StoreMantineTable: React.FC<StoreMantineTableProps> = ({noticeRefreshStoreDropdown}) => {
@@ -155,17 +156,15 @@ const columns = useMemo<MRT_ColumnDef<Store>[]>(
         required: true,
         error: validationErrors?.[cell.id],
         //store edited user in state to be saved later
-        onBlur: (event) => {
-          const validationError = !validateRequired(event.currentTarget.value)
-            ? 'Required'
-            : undefined;
+        onBlur: async (event) => {
+          const validationError = await validatePublicToken(event.currentTarget.value);
           setValidationErrors({
             ...validationErrors,
             [cell.id]: validationError,
           });
           setEditedStores({ 
             ...editedStores, 
-            [row.id]: { ...(editedStores[row.id] ? editedStores[row.id] : row.original), StoreToken: event.currentTarget.value },
+            [row.id]: { ...(editedStores[row.id] ? editedStores[row.id] : row.original), StoreToken: formatToGuid(event.currentTarget.value) },
           });
         },
       }),
@@ -179,17 +178,15 @@ const columns = useMemo<MRT_ColumnDef<Store>[]>(
         required: true,
         error: validationErrors?.[cell.id],
         //store edited user in state to be saved later
-        onBlur: (event) => {
-          const validationError = !validateRequired(event.currentTarget.value)
-            ? 'Required'
-            : undefined;
+        onBlur: async (event) => {
+          const validationError = await validatePublicToken(event.currentTarget.value);
           setValidationErrors({
             ...validationErrors,
             [cell.id]: validationError,
           });
           setEditedStores({ 
             ...editedStores, 
-            [row.id]: { ...(editedStores[row.id] ? editedStores[row.id] : row.original), HeadOfficeToken: event.currentTarget.value },
+            [row.id]: { ...(editedStores[row.id] ? editedStores[row.id] : row.original), HeadOfficeToken: formatToGuid(event.currentTarget.value) },
           });
         },
       }),
@@ -363,6 +360,18 @@ return useMutation({
 }
 
 const validateRequired = (value: string) => !!value?.length;
+
+const validatePublicToken = async (publicToken: string): Promise<string> => {
+  let result = '';
+  if (!validateRequired(publicToken)) {
+    result = 'Public token is required.';
+  } else if (!isValidGuid(formatToGuid( publicToken))) {
+    result = 'Public token Guid is invalid.';
+  } else if (await IsStoreExistByPublicToken(formatToGuid(publicToken))) {
+    result = 'No store found by this token.';
+  }
+  return result;
+}
 
 function validateStore(store: Store) {
 return {

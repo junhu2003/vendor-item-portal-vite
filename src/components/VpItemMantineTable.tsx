@@ -158,6 +158,7 @@ const VpItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
     }
     
     fetchData();
+    
 
   }, [selectedStore]);
 

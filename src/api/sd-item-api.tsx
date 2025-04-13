@@ -155,3 +155,17 @@ export async function postItems(extItems: ExtItem): Promise<ExtItemResponse[]> {
         body: JSON.stringify(extItems)});    
     return response.json();
 }
+
+export async function IsStoreExistByPublicToken(publicToken: string): Promise<boolean> {
+    const reqUrl = apiBaseUrl  + '/api/SdWeb/v1/IsStoreExistByPublicToken?publicToken=' + publicToken;
+    const response = await fetch(reqUrl, { 
+        method: 'GET', 
+        credentials: 'include', 
+        mode: 'cors', 
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }});    
+    const text = await response.text();
+    return text === 'true';
+}
