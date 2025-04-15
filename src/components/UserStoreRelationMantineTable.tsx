@@ -127,8 +127,9 @@ const columns = useMemo<MRT_ColumnDef<UserStoreRelation>[]>(
       header: 'User ID',
       editable: false,
       editVariant: 'select',
-      mantineEditSelectProps: ({ row }) => ({
+      mantineEditSelectProps: ({ row, table }) => ({
         data: userLabels,
+        autoFocus: table.getState().creatingRow?.index === row.index,
         //store edited User Store Relation in state to be saved later
         onChange: (value: any) =>
           setEditedUserStoreRelations({

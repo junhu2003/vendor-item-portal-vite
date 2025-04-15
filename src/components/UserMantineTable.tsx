@@ -201,8 +201,9 @@ const columns = useMemo<MRT_ColumnDef<Users>[]>(
       accessorKey: 'Name',
       header: 'Name',
       size: 150,
-      mantineEditTextInputProps: ({ cell, row }) => ({
+      mantineEditTextInputProps: ({ cell, row, table }) => ({
         type: 'text',
+        autoFocus: table.getState().creatingRow?.index === row.index,
         required: true,
         error: validationErrors?.[cell.id],
         //store edited user in state to be saved later

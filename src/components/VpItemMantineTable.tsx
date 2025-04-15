@@ -323,8 +323,9 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         accessorKey: 'Barcode',
         header: 'Barcode',
         size: 150,
-        mantineEditTextInputProps: ({ cell, row }) => ({
+        mantineEditTextInputProps: ({ cell, row, table }) => ({
           type: 'text',
+          autoFocus: table.getState().creatingRow?.index === row.index,
           required: true,
           error: validationErrors?.[cell.id],
           //store edited item in state to be saved later
@@ -419,8 +420,8 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       },
       {
         accessorKey: 'UnitPrice',
-        header: 'Unit P',
-        size: 150,
+        header: 'Price',
+        size: 100,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'number',
           required: true,
@@ -443,8 +444,8 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       },      
       {
         accessorKey: 'UnitCost',
-        header: 'Unit C',
-        size: 150,
+        header: 'Cost',
+        size: 100,
         mantineEditTextInputProps: ({ cell, row }) => ({
           type: 'number',
           required: true,
@@ -512,8 +513,8 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       },
       {
         accessorKey: 'ItemType',
-        header: 'item Type',        
-        size: 150,
+        header: 'Type',
+        size: 120,
         editVariant: 'select',
         mantineEditSelectProps: ({ row }) => ({
           data: itemTypes,

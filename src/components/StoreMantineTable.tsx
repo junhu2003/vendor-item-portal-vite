@@ -103,8 +103,9 @@ const columns = useMemo<MRT_ColumnDef<Store>[]>(
       accessorKey: 'StoreName',
       header: 'Store Name',
       size: 300,
-      mantineEditTextInputProps: ({ cell, row }) => ({
+      mantineEditTextInputProps: ({ cell, row, table }) => ({
         type: 'text',
+        autoFocus: table.getState().creatingRow?.index === row.index,
         required: true,
         error: validationErrors?.[cell.id],
         //store edited user in state to be saved later
