@@ -8,7 +8,7 @@ import {
   type MRT_TableOptions,
   useMantineReactTable,
 } from 'mantine-react-table';
-import { ActionIcon, Button, Text, Tooltip, FileInput, MultiSelect, Switch } from '@mantine/core';
+import { ActionIcon, Button, Text, Tooltip, FileInput, MultiSelect, Switch, Autocomplete } from '@mantine/core';
 import { modals } from '@mantine/modals';
 import { IconTrash, IconSend, IconFileImport, IconInfoCircle } from '@tabler/icons-react';
 import {  
@@ -54,8 +54,6 @@ const VpItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string | undefined>
   >({});
-
-  const queryClient = useQueryClient();
 
   //const [toast, setToast] = useState<React.ReactElement | null>(null);
   const [lastSendItemHistory, setLastSendItemHistory] = useState<SendItemHistory | null>(null);
@@ -121,6 +119,7 @@ const VpItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
     setLastSendItemHistory(res);
   }
 
+  const queryClient = useQueryClient();
   useEffect(() => {
     
     const fetchData = async () => {
@@ -158,8 +157,7 @@ const VpItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
     }
     
     fetchData();
-    
-
+    queryClient.invalidateQueries({ queryKey: ['items'] });
   }, [selectedStore]);
 
   //call CREATE hook
@@ -259,7 +257,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         UnitCost: extItem.UnitCost,
         STS: extItem.STS,
         ItemType: extItem.ItemType,
-        BrandID: Number(extItem.BrandID),
+        Brand: extItem.Brand,
         Barcode: extItem.Barcode,
         ReportCode: extItem.ReportCode,
         ImageFileName: extItem.ImageFileName,
@@ -272,9 +270,8 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         BtlDepositInCost: typeof(extItem.BtlDepositInCost) === 'boolean' ? extItem.BtlDepositInCost : false,
         EcoFeeInPrice: typeof(extItem.EcoFeeInPrice) === 'boolean' ? extItem.EcoFeeInPrice : false,
         EcoFeeInCost: typeof(extItem.EcoFeeInCost) === 'boolean' ? extItem.EcoFeeInCost : false,
-        //SdItemID: extItem.SdItemID,
-        //LastAction: extItem.LastAction,
-        //LastSendDate: extItem.LastSendDate,
+        SdItemID: extItem.SdItemID,
+        LastAction: extItem.LastAction,        
         CreatedDate: new Date(), // extItem.CreatedDate,
         CreateUserID: extItem.CreateUserID,
         LastSendDate: extItem.LastSendDate ? new Date(extItem.LastSendDate) : undefined,
@@ -544,19 +541,24 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         }),
       },
       {
-        accessorKey: 'BrandID',
+        accessorKey: 'Brand',
         header: 'Brand',
-        size: 150,        
-        editVariant: 'select',
-        mantineEditSelectProps: ({ row }) => ({
-          data: brands,
-          //store edited item in state to be saved later
-          onChange: (value: any) =>
-            setEditedItems({
-              ...editedItems,
-              [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), BrandID: value },
-            }),
-        }),          
+        size: 150,
+        // 👇 Custom editing logic using Mantine's Autocomplete
+        Edit: ({ cell, row }) => (
+          <Autocomplete
+            data={brands}
+            defaultValue={cell.getValue<string>()}
+            onChange={(value: any) => {
+              setEditedItems({
+                ...editedItems,
+                [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), Brand: value },
+              })
+            }}
+            placeholder="Type or select"
+            clearable            
+          />          
+        ),
       },
       {
         accessorKey: "ReportCode",
@@ -609,7 +611,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'ManualPrice',
         header: 'MP',
-        size: 60,        
+        size: 80,        
         enableEditing: false, // Prevent editing for file column
         Cell: ({ cell, row }) => {          
           return (            
@@ -634,7 +636,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'Discountable',
         header: 'Dis',
-        size: 60,
+        size: 80,
         enableEditing: false, // Prevent editing for file column
         Cell: ({ cell, row }) => {          
           return (            
@@ -659,7 +661,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'Inventory',
         header: 'Inv',
-        size: 60,
+        size: 80,
         enableEditing: false, // Prevent editing for file column
         Cell: ({ cell, row }) => {          
           return (            
@@ -684,7 +686,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'AvailableOnWeb',
         header: 'AOW',
-        size: 60,
+        size: 80,
         enableEditing: false, // Prevent editing for file column
         Cell: ({ cell, row }) => {          
           return (            
@@ -709,7 +711,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'BtlDepositInPrice',
         header: 'BDP',
-        size: 60,
+        size: 80,
         enableEditing: false, // Prevent editing for file column
         Cell: ({ cell, row }) => {          
           return (            
@@ -734,7 +736,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'BtlDepositInCost',
         header: 'BDC',
-        size: 60,
+        size: 80,
         enableEditing: false, // Prevent editing for file column
         Cell: ({ cell, row }) => {          
           return (            
@@ -759,7 +761,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'EcoFeeInPrice',
         header: 'EcoP',
-        size: 60,
+        size: 80,
         enableEditing: false, // Prevent editing for file column
         Cell: ({ cell, row }) => {          
           return (            
@@ -784,7 +786,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       {
         accessorKey: 'EcoFeeInCost',
         header: 'EcoC',
-        size: 60,
+        size: 80,
         enableEditing: false, // Prevent editing for file column
         Cell: ({ cell, row }) => {          
           return (            
@@ -820,7 +822,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
     enableRowActions: true,  
     enableRowSelection: true,    
     enableColumnResizing: true,
-    enableColumnOrdering: true,    
+    enableColumnOrdering: false,    
     positionActionsColumn: 'first',
     getRowId: (row) => row.ItemID ? row.ItemID.toString() : undefined,
     mantineToolbarAlertBannerProps: isLoadingItemsError
@@ -901,7 +903,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       >
         Create New item
       </Button>
-    ),
+    ),    
     state: {
       isLoading: isLoadingItems,
       isSaving: isCreatingItem || isUpdatingItem || isDeletingItem,
@@ -1008,7 +1010,7 @@ function useGetItems(store: Store | null, loginUser: Users | null) {
         UnitCost: t.UnitCost,
         STS: t.STS,
         ItemType: t.ItemType,
-        BrandID: t.BrandID ? t.BrandID.toString() : '',
+        Brand: t.Brand,
         Barcode: t.Barcode,
         ReportCode: t.ReportCode,
         ImageFileName: t.ImageFileName,

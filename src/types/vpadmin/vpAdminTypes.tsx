@@ -17,8 +17,7 @@ export type UserLevel = {
 export type Store = {
     StoreID: number,
 	StoreName: string,
-	HeadOfficeName: string,
-	StoreToken: string,
+	HeadOfficeName: string,	
 	HeadOfficeToken: string,
 };
 
@@ -40,7 +39,7 @@ export type item = {
     UnitCost?: number,
     STS?: string,
     ItemType?: string,
-    BrandID?: number | string,
+    Brand?: string | undefined,
     Barcode?: string,
     ReportCode?: string,
     ImageFileName?: string,

@@ -64,7 +64,7 @@ export async function getBrandLabels(publicToken: string): Promise<{label: strin
     const uniqueList = Array.from(
         new Map(brands.map(brand => [brand.BrandName, {
             label: brand.BrandName,
-            value: brand.BrandID.toString()
+            value: brand.BrandName //brand.BrandID.toString()
         }])).values()
     );
     return uniqueList;    

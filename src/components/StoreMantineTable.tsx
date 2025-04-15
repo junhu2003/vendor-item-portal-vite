@@ -146,29 +146,7 @@ const columns = useMemo<MRT_ColumnDef<Store>[]>(
           });
         },
       }),
-    },      
-    {
-      accessorKey: 'StoreToken',
-      header: 'Store Token',
-      size: 300,
-      mantineEditTextInputProps: ({ cell, row }) => ({
-        type: 'text',
-        required: true,
-        error: validationErrors?.[cell.id],
-        //store edited user in state to be saved later
-        onBlur: async (event) => {
-          const validationError = await validatePublicToken(event.currentTarget.value);
-          setValidationErrors({
-            ...validationErrors,
-            [cell.id]: validationError,
-          });
-          setEditedStores({ 
-            ...editedStores, 
-            [row.id]: { ...(editedStores[row.id] ? editedStores[row.id] : row.original), StoreToken: formatToGuid(event.currentTarget.value) },
-          });
-        },
-      }),
-    },      
+    },    
     {
       accessorKey: 'HeadOfficeToken',
       header: 'Head Office Token',
@@ -238,7 +216,7 @@ const table = useMantineReactTable(
       </Button>
     ),
     renderTopToolbarCustomActions: ({ table }) => (
-      loginUser?.UserLevelID.toString() !== '3' && 
+      loginUser?.UserLevelID.toString() === '1' && 
       <Button
         onClick={() => {
           table.setCreatingRow(true); 

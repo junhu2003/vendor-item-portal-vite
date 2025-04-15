@@ -200,6 +200,7 @@ const columns = useMemo<MRT_ColumnDef<Users>[]>(
     {
       accessorKey: 'Name',
       header: 'Name',
+      size: 150,
       mantineEditTextInputProps: ({ cell, row }) => ({
         type: 'text',
         required: true,
@@ -223,6 +224,7 @@ const columns = useMemo<MRT_ColumnDef<Users>[]>(
     {
       accessorKey: 'Email',
       header: 'Email',
+      size: 250,
       mantineEditTextInputProps: ({ cell, row }) => ({
         type: 'email',
         required: true,
@@ -243,21 +245,17 @@ const columns = useMemo<MRT_ColumnDef<Users>[]>(
         },
       }),
     },      
-    /*{
+    {
       accessorKey: 'UserLevelID',
       header: 'User Level',
+      size: 100,
       editable: false,
-      editVariant: 'select',
-      mantineEditSelectProps: ({ row }) => ({
-        data: userLevels,
-        //store edited user in state to be saved later
-        onChange: (value: any) =>
-          setEditedUsers({
-            ...editedUsers,
-            [row.id]: { ...(editedUsers[row.id] ? editedUsers[row.id] : row.original), UserLevelID: value },
-          }),
-      }),
-    },*/      
+      enableEditing: false,
+      Cell: ({ row }: { row: MRT_Row<Users> }) => {
+        const userLevel = userLevels.find(level => level.value === row.original.UserLevelID);
+        return userLevel ? userLevel.label : row.original.UserLevelID;
+      },
+    },      
   ],
   [editedUsers, validationErrors, userLevels],
 );
@@ -453,9 +451,9 @@ const queryClient = useQueryClient();
 return useMutation({
   mutationFn: async (user: Users) => {
     //send api create request here
-    if (loginUser?.UserLevelID === '1') {
+    if (loginUser?.UserLevelID.toString() === '1') {
       user.UserLevelID = '2';
-    } else if (loginUser?.UserLevelID === '2') {
+    } else if (loginUser?.UserLevelID.toString() === '2') {
       user.UserLevelID = '3';
     }    
     user.ManagerUserID = loginUser?.UserID ?? ''; //set manager user id to logged in user id
