@@ -941,7 +941,7 @@ function useCreateItem(loginUser: Users | null) {
         UnitCost: t.UnitCost,
         STS: t.STS,
         ItemType: t.ItemType,
-        BrandID: t.Brand,
+        Brand: t.Brand,
         Barcode: t.Barcode,
         ReportCode: t.ReportCode,
         ImageFileName: t.ImageFileName,
