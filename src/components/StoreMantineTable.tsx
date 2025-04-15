@@ -242,8 +242,7 @@ function useCreateStore(loginUser: Users | null, noticeRefreshStoreDropdown: any
 const queryClient = useQueryClient();
 return useMutation({
   mutationFn: async (store: Store) => {
-    //send api create request here  
-    store.StoreToken = formatToGuid(store.StoreToken);
+    //send api create request here      
     store.HeadOfficeToken = formatToGuid(store.HeadOfficeToken);  
     const storeCreator: StoreCreation = { 
       NewStore: store,     
