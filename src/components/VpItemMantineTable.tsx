@@ -263,7 +263,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
         ImageFileName: extItem.ImageFileName,
         ImageFileData: extItem.ImageFileData,
         ManualPrice: typeof(extItem.ManualPrice) === 'boolean' ? extItem.ManualPrice : false,
-        Discountable: typeof(extItem.Discountable) === 'boolean' ? extItem.ManualPrice : false,
+        Discountable: typeof(extItem.Discountable) === 'boolean' ? extItem.Discountable : false,
         Inventory: typeof(extItem.Inventory) === 'boolean' ? extItem.Inventory : false,
         AvailableOnWeb: typeof(extItem.AvailableOnWeb) === 'boolean' ? extItem.AvailableOnWeb : false,
         BtlDepositInPrice: typeof(extItem.BtlDepositInPrice) === 'boolean' ? extItem.BtlDepositInPrice : false,
@@ -904,7 +904,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       >
         Create New item
       </Button>
-    ),    
+    ), 
     state: {
       isLoading: isLoadingItems,
       isSaving: isCreatingItem || isUpdatingItem || isDeletingItem,
@@ -947,7 +947,7 @@ function useCreateItem(loginUser: Users | null) {
         ImageFileName: t.ImageFileName,
         ImageFileData: t.ImageFileData,
         ManualPrice: typeof(t.ManualPrice) === 'boolean' ? t.ManualPrice : false,
-        Discountable: typeof(t.Discountable) === 'boolean' ? t.ManualPrice : false,
+        Discountable: typeof(t.Discountable) === 'boolean' ? t.Discountable : false,
         Inventory: typeof(t.Inventory) === 'boolean' ? t.Inventory : false,
         AvailableOnWeb: typeof(t.AvailableOnWeb) === 'boolean' ? t.AvailableOnWeb : false,
         BtlDepositInPrice: typeof(t.BtlDepositInPrice) === 'boolean' ? t.BtlDepositInPrice : false,
