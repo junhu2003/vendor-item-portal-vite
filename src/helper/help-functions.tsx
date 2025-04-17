@@ -21,3 +21,29 @@ export function isValidGuid(guid: string): boolean {
     const regex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/;
     return regex.test(guid);
 }
+
+export function handleKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        const formElements = Array.from(
+            document.querySelectorAll('input, button, select, textarea, [tabindex]:not([tabindex="-1"])')
+        ).filter((el) => !(el as HTMLInputElement).disabled);
+
+        let index = formElements.indexOf(event.currentTarget);
+        if (index > -1) {
+            index++;
+            while (index < formElements.length) {                
+                const nextElement = formElements[index] as HTMLElement;
+                if (nextElement.tagName === 'INPUT' && (nextElement as HTMLInputElement).type === 'hidden') {
+                    index++;
+                } else if (nextElement.tagName === 'BUTTON') {
+                    (nextElement as HTMLButtonElement).click();                 
+                    index++;                    
+                } else {
+                    (nextElement as HTMLInputElement).focus();
+                    break;
+                }
+            }            
+        }
+    }
+}

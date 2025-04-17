@@ -27,6 +27,7 @@ import {
   DeleteVpUser,  
   GetMyVpUsers,
   } from '../api/vp-item-api';  
+import { handleKeyPress } from '../helper/help-functions';  
 import { useAuth } from '../context/AuthContext';
 import bcryptjs from 'bcryptjs';
 
@@ -220,6 +221,9 @@ const columns = useMemo<MRT_ColumnDef<Users>[]>(
             [row.id]: { ...(editedUsers[row.id] ? editedUsers[row.id] : row.original), Name: event.currentTarget.value },
           });
         },
+        onKeyDown: (e) => {
+          handleKeyPress(e);        
+        },
       }),
     },      
     {
@@ -243,6 +247,9 @@ const columns = useMemo<MRT_ColumnDef<Users>[]>(
             ...editedUsers, 
             [row.id]: { ...(editedUsers[row.id] ? editedUsers[row.id] : row.original), Email: event.currentTarget.value },
           });
+        },
+        onKeyDown: (e) => {
+          handleKeyPress(e);        
         },
       }),
     },      

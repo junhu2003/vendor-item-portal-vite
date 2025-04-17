@@ -24,7 +24,7 @@ import {
   } from '../api/vp-item-api';
 import { IsStoreExistByPublicToken } from '../api/sd-item-api';
 import { StoreMantineTableProps } from '../types/components/StoreMantineTableTypes';
-import { formatToGuid, isValidGuid } from '../helper/help-functions';  
+import { formatToGuid, isValidGuid, handleKeyPress } from '../helper/help-functions';  
 import { useAuth } from '../context/AuthContext';
 
 const StoreMantineTable: React.FC<StoreMantineTableProps> = ({noticeRefreshStoreDropdown}) => {
@@ -122,6 +122,9 @@ const columns = useMemo<MRT_ColumnDef<Store>[]>(
             [row.id]: { ...(editedStores[row.id] ? editedStores[row.id] : row.original), StoreName: event.currentTarget.value },
           });
         },
+        onKeyDown: (e) => {
+          handleKeyPress(e);        
+        },
       }),
     },      
     {
@@ -146,6 +149,9 @@ const columns = useMemo<MRT_ColumnDef<Store>[]>(
             [row.id]: { ...(editedStores[row.id] ? editedStores[row.id] : row.original), HeadOfficeName: event.currentTarget.value },
           });
         },
+        onKeyDown: (e) => {
+          handleKeyPress(e);        
+        },
       }),
     },    
     {
@@ -167,6 +173,9 @@ const columns = useMemo<MRT_ColumnDef<Store>[]>(
             ...editedStores, 
             [row.id]: { ...(editedStores[row.id] ? editedStores[row.id] : row.original), HeadOfficeToken: formatToGuid(event.currentTarget.value) },
           });
+        },
+        onKeyDown: (e) => {
+          handleKeyPress(e);        
         },
       }),
     },      

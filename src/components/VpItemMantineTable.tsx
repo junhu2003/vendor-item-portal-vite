@@ -16,7 +16,6 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-
 import { DeptCategories, ExtItemResponse } from '../types/sditem/sdItemTypes'; 
 import { item, ExtItem, SendItemHistory, Store, Users } from '../types/vpadmin/vpAdminTypes';
 import {
@@ -28,13 +27,11 @@ import {
   getItemTypeLabels,
   getItemStatusLabels,
 } from '../api/sd-item-api-helper';
-
 import {
   barcodesDuplicationCheck,
   itemNumberDuplicationCheck,
   postItems,
 } from '../api/sd-item-api';
-
 import { 
   GetMyVpUsers,
   GetVpItems,
@@ -44,6 +41,7 @@ import {
   GetLastSendItemHistory, 
 } from '../api/vp-item-api';
 import { useAuth } from '../context/AuthContext';
+import { handleKeyPress } from '../helper/help-functions';
 //import Toast from './Toast';
 import { showNotification } from '@mantine/notifications';
 
@@ -343,6 +341,9 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
               [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), Barcode: currentValue},
             });
           },
+          onKeyDown: (e) => {
+            handleKeyPress(e);
+          },
         }),
       },
       {
@@ -368,6 +369,9 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
               [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), ItemNumber: currentValue},
             });
           },
+          onKeyDown: (e) => {
+            handleKeyPress(e);
+          },
         }),
       },      
       {
@@ -391,6 +395,9 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
               ...editedItems,
               [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), ItemName: event.currentTarget.value },
             });
+          },
+          onKeyDown: (e) => {
+            handleKeyPress(e);
           },
         }),
       },
@@ -416,6 +423,9 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
               [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), ItemDesc: event.currentTarget.value },
             });
           },
+          onKeyDown: (e) => {
+            handleKeyPress(e);
+          },
         }),
       },
       {
@@ -439,6 +449,9 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
               ...editedItems,
               [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), UnitPrice: Number(event.currentTarget.value) },
             });
+          },
+          onKeyDown: (e) => {
+            handleKeyPress(e);
           },
         }),
       },      
@@ -464,6 +477,9 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
               [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), UnitCost: Number(event.currentTarget.value) },
             });
           },
+          onKeyDown: (e) => {
+            handleKeyPress(e);
+          },
         }),
       },
       {
@@ -479,6 +495,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
               ...editedItems,
               [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), DepartmentID: value },
             }),
+          
         }),          
       },      
       {
@@ -493,7 +510,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
             setEditedItems({
               ...editedItems,
               [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), CategoryID: value },
-            }),
+            }),          
         }),          
       },
       {
@@ -508,7 +525,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
             setEditedItems({
               ...editedItems,
               [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), TaxCodeID: value },
-            }),
+            }),          
         }),          
       },
       {
@@ -523,7 +540,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
             setEditedItems({
               ...editedItems,
               [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), ItemType: value },
-            }),
+            }),          
         }),
       },
       {
@@ -538,7 +555,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
             setEditedItems({
               ...editedItems,
               [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), STS: value },
-            }),
+            }),          
         }),
       },
       {
@@ -555,11 +572,11 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                 ...editedItems,
                 [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), Brand: value },
               })
-            }}
+            }}            
             placeholder="Type or select"
             clearable            
           />          
-        ),
+        ),        
       },
       {
         accessorKey: "ReportCode",
@@ -578,7 +595,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(curItem), ReportCode: value.join(',')},
                 });                
               }}
-              placeholder="Select options"
+              placeholder="Select options"              
               searchable
               clearable              
             />            
@@ -629,6 +646,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), ManualPrice: status },
                 });
               }}
+              onKeyDown={(e) => {handleKeyPress(e);}}
               size='xs'
             />
           );
@@ -654,6 +672,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), Discountable: status },
                 });
               }}
+              onKeyDown={(e) => {handleKeyPress(e);}}
               size='xs'
             />
           );
@@ -679,6 +698,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), Inventory: status },
                 });
               }}
+              onKeyDown={(e) => {handleKeyPress(e);}}
               size='xs'
             />
           );
@@ -704,6 +724,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), AvailableOnWeb: status },
                 });
               }}
+              onKeyDown={(e) => {handleKeyPress(e);}}
               size='xs'
             />
           );
@@ -729,6 +750,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), BtlDepositInPrice: status },
                 });
               }}
+              onKeyDown={(e) => {handleKeyPress(e);}}
               size='xs'
             />
           );
@@ -754,6 +776,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), BtlDepositInCost: status },
                 });
               }}
+              onKeyDown={(e) => {handleKeyPress(e);}}
               size='xs'
             />
           );
@@ -779,6 +802,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), EcoFeeInPrice: status },
                 });
               }}
+              onKeyDown={(e) => {handleKeyPress(e);}}
               size='xs'
             />
           );
@@ -804,6 +828,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), EcoFeeInCost: status },
                 });
               }}
+              onKeyDown={(e) => {handleKeyPress(e);}}
               size='xs'
             />
           );
