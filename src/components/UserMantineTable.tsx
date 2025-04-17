@@ -19,13 +19,15 @@ import {
   LockIcon,
   XIcon,
 } from 'lucide-react';
-import { UserLevel, Users } from '../types/vpadmin/vpAdminTypes';
+import { UserLevel, Users, MantineTableColumnVisibility } from '../types/vpadmin/vpAdminTypes';
 import { 
   GetAllVpUserLevels,
   CreateVpUser,
   UpdateVpUser,
   DeleteVpUser,  
   GetMyVpUsers,
+  GetMyTableColumnVisibilitySetting,
+  SetMyTableColumnVisibilitySetting,
   } from '../api/vp-item-api';  
 import { handleKeyPress } from '../helper/help-functions';  
 import { useAuth } from '../context/AuthContext';
@@ -39,6 +41,9 @@ const UserMantineTable: React.FC = () => {
   Record<string, string | undefined>
 >({});
 
+const COLUMN_VISIBILITY_KEY = 'VpUserMantineTable';
+const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({});
+
 const [isChangeUserPwdModalOpen, setIsChangeUserPwdModalOpen] = useState(false);
 const [selUser, setSelUser] = useState<Users | null>(null); //user state for change password modal
 const [error, setError] = useState<string>(''); //error state for change password modal
@@ -50,6 +55,19 @@ const [confirmPwd, setConfirmPwd] = useState<string>(''); //password state for c
 const [editedUsers, setEditedUsers] = useState<Record<string, Users>>({});
 
 const [userLevels, setUserLevels] = useState<{ label: string, value: string }[]>([]);
+
+// Save to db table on visibility change
+const handleVisibilityChange = async (visibility: Record<string, boolean>) => {
+  setColumnVisibility(visibility);
+
+  const setting: MantineTableColumnVisibility = {      
+    UserID: loginUser?.UserID ?? '',
+    MaintineTableName: COLUMN_VISIBILITY_KEY,
+    ColumnVisibilityValue: JSON.stringify(visibility),
+  };
+
+  await SetMyTableColumnVisibilitySetting(setting);
+};
 
 const queryClient = useQueryClient();
 useEffect(() => {
@@ -66,6 +84,14 @@ useEffect(() => {
   };
 
   fetchData();
+
+  const fetchColumnVisibility = async () => {
+    const setting = await GetMyTableColumnVisibilitySetting(loginUser?.UserID ?? '', COLUMN_VISIBILITY_KEY);
+    setColumnVisibility(setting && setting.ColumnVisibilityValue ? JSON.parse(setting.ColumnVisibilityValue) : {});
+  };
+
+  fetchColumnVisibility();
+
   queryClient.invalidateQueries({ queryKey: ['users'] })
 }, []);
 
@@ -338,11 +364,19 @@ const table = useMantineReactTable(
         Create New User
       </Button>
     ),
+    onColumnVisibilityChange: (updaterOrValue) => {
+      const newVisibility =
+        typeof updaterOrValue === 'function'
+          ? updaterOrValue(columnVisibility)
+          : updaterOrValue;
+      handleVisibilityChange(newVisibility);
+    },
     state: {
       isLoading: isLoadingUsers,
       isSaving: isCreatingUser || isUpdatingUser || isDeletingUser,
       showAlertBanner: isLoadingUsersError,
       showProgressBars: isFetchingUsers,
+      columnVisibility,
     },
   });
 

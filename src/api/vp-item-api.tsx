@@ -5,7 +5,8 @@ import { Users,
     StoreCreation,
     UserStoreRelation, 
     item, 
-    SendItemHistory } from '../types/vpadmin/vpAdminTypes';
+    SendItemHistory,
+    MantineTableColumnVisibility } from '../types/vpadmin/vpAdminTypes';
 import bcryptjs from 'bcryptjs';
 
 const apiBaseUrl = import.meta.env.VITE_API_URL;
@@ -430,6 +431,41 @@ export async function UpdateItemByResponse(res: ExtItemResponse): Promise<boolea
             'Content-Type': 'application/json',
         }, 
         body: JSON.stringify(res)});
+    if (response.ok && response.status === 200) {
+        return response.json();
+    } else {
+        return false;
+    }
+}
+
+export async function GetMyTableColumnVisibilitySetting(myUserID: string, tableName: string): Promise<MantineTableColumnVisibility | null> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/GetMyTableColumnVisibilitySetting?myUserID=' + myUserID + '&tableName=' + tableName;    
+    const response = await fetch(reqUrl, { 
+        method: 'GET', 
+        credentials: 'include', 
+        mode: 'cors', 
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }});
+    if (response.ok && response.status === 200) {
+        return response.json();
+    } else {
+        return null;
+    }
+}
+
+export async function SetMyTableColumnVisibilitySetting(setting: MantineTableColumnVisibility): Promise<boolean> {
+    var reqUrl = apiBaseUrl + '/api/VpItem/v1/SetMyTableColumnVisibilitySetting'
+    const response = await fetch(reqUrl, { 
+        method: 'POST', 
+        credentials: 'include', 
+        mode: 'cors', 
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }, 
+        body: JSON.stringify(setting)});
     if (response.ok && response.status === 200) {
         return response.json();
     } else {

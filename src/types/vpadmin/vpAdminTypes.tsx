@@ -85,4 +85,8 @@ export type StoreCreation = {
     CreateUser: Users | null,
 }
 
-
+export type MantineTableColumnVisibility = {
+    UserID: string,
+    MaintineTableName: string,
+    ColumnVisibilityValue: string | undefined,
+}

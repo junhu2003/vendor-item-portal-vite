@@ -15,12 +15,14 @@ import {
 import { ActionIcon, Button, Text, Tooltip } from '@mantine/core';
 import {modals } from '@mantine/modals';
 import { IconTrash } from '@tabler/icons-react';
-import { Store, StoreCreation, Users } from '../types/vpadmin/vpAdminTypes';
+import { Store, StoreCreation, Users, MantineTableColumnVisibility } from '../types/vpadmin/vpAdminTypes';
 import {   
   CreateStore,
   UpdateStores,
   DeleteStore,  
   GetUserStores,
+  GetMyTableColumnVisibilitySetting,
+  SetMyTableColumnVisibilitySetting,
   } from '../api/vp-item-api';
 import { IsStoreExistByPublicToken } from '../api/sd-item-api';
 import { StoreMantineTableProps } from '../types/components/StoreMantineTableTypes';
@@ -34,11 +36,34 @@ const [validationErrors, setValidationErrors] = useState<
   Record<string, string | undefined>
 >({});
 
+const COLUMN_VISIBILITY_KEY = 'VpStoreMantineTable';
+const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({});
+
 //keep track of rows that have been edited
 const [editedStores, setEditedStores] = useState<Record<string, Store>>({});
 
+// Save to db table on visibility change
+const handleVisibilityChange = async (visibility: Record<string, boolean>) => {
+  setColumnVisibility(visibility);
+
+  const setting: MantineTableColumnVisibility = {      
+    UserID: loginUser?.UserID ?? '',
+    MaintineTableName: COLUMN_VISIBILITY_KEY,
+    ColumnVisibilityValue: JSON.stringify(visibility),
+  };
+
+  await SetMyTableColumnVisibilitySetting(setting);
+};
+
 const queryClient = useQueryClient();
 useEffect(() => {
+  const fetchColumnVisibility = async () => {
+    const setting = await GetMyTableColumnVisibilitySetting(loginUser?.UserID ?? '', COLUMN_VISIBILITY_KEY);
+    setColumnVisibility(setting && setting.ColumnVisibilityValue ? JSON.parse(setting.ColumnVisibilityValue) : {});
+  };
+
+  fetchColumnVisibility();
+
   queryClient.invalidateQueries({ queryKey: ['stores'] })
 }, []);
 
@@ -235,11 +260,19 @@ const table = useMantineReactTable(
         Create New Store
       </Button>
     ),
+    onColumnVisibilityChange: (updaterOrValue) => {
+      const newVisibility =
+        typeof updaterOrValue === 'function'
+          ? updaterOrValue(columnVisibility)
+          : updaterOrValue;
+      handleVisibilityChange(newVisibility);
+    },
     state: {
       isLoading: isLoadingStores,
       isSaving: isCreatingStore || isUpdatingStore || isDeletingStore,
       showAlertBanner: isLoadingStoresError,
       showProgressBars: isFetchingStores,
+      columnVisibility,
     },
   });
 

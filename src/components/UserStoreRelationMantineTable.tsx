@@ -15,7 +15,7 @@ import {
 import { ActionIcon, Button, Text, Tooltip } from '@mantine/core';
 import {modals } from '@mantine/modals';
 import { IconTrash } from '@tabler/icons-react';
-import { Users, Store, UserStoreRelation } from '../types/vpadmin/vpAdminTypes';
+import { Users, Store, UserStoreRelation, MantineTableColumnVisibility } from '../types/vpadmin/vpAdminTypes';
 import {   
   CreateUserStoreRelation,
   UpdateUserStoreRelations,
@@ -23,6 +23,8 @@ import {
   GetMyUserStoreRelations,
   GetMyVpUsers,
   GetUserStores,
+  GetMyTableColumnVisibilitySetting,
+  SetMyTableColumnVisibilitySetting,
   } from '../api/vp-item-api';  
   import { useAuth } from '../context/AuthContext';
 
@@ -32,11 +34,28 @@ const UserStoreRelationMantineTable: React.FC = () => {
   const [validationErrors, setValidationErrors] = useState<
   Record<string, string | undefined>
 >({});
+
+const COLUMN_VISIBILITY_KEY = 'VpUserStoreMantineTable';
+const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({});
+
 //keep track of rows that have been edited
 const [editedUserStoreRelations, setEditedUserStoreRelations] = useState<Record<string, UserStoreRelation>>({});
 
 const [userLabels, setUserLabels] = useState<{ label: string, value: string }[]>([]);
 const [storeLabels, setStoreLabels] = useState<{ label: string, value: string }[]>([]);
+
+// Save to db table on visibility change
+const handleVisibilityChange = async (visibility: Record<string, boolean>) => {
+  setColumnVisibility(visibility);
+
+  const setting: MantineTableColumnVisibility = {      
+    UserID: loginUser?.UserID ?? '',
+    MaintineTableName: COLUMN_VISIBILITY_KEY,
+    ColumnVisibilityValue: JSON.stringify(visibility),
+  };
+
+  await SetMyTableColumnVisibilitySetting(setting);
+};
 
 const queryClient = useQueryClient();
 useEffect(() => {
@@ -62,6 +81,14 @@ useEffect(() => {
   };
 
   fetchData();
+
+  const fetchColumnVisibility = async () => {
+    const setting = await GetMyTableColumnVisibilitySetting(loginUser?.UserID ?? '', COLUMN_VISIBILITY_KEY);
+    setColumnVisibility(setting && setting.ColumnVisibilityValue ? JSON.parse(setting.ColumnVisibilityValue) : {});
+  };
+
+  fetchColumnVisibility();
+
   queryClient.invalidateQueries({ queryKey: ['relations'] })
 }, []);
 
@@ -209,11 +236,19 @@ const table = useMantineReactTable(
         Create New User & Store Relation
       </Button>
     ),
+    onColumnVisibilityChange: (updaterOrValue) => {
+      const newVisibility =
+        typeof updaterOrValue === 'function'
+          ? updaterOrValue(columnVisibility)
+          : updaterOrValue;
+      handleVisibilityChange(newVisibility);
+    },
     state: {
       isLoading: isLoadingUserStoreRelations,
       isSaving: isCreatingUserStoreRelation || isUpdatingUserStoreRelation || isDeletingUserStoreRelation,
       showAlertBanner: isLoadingUserStoreRelationsError,
       showProgressBars: isFetchingUserStoreRelations,
+      columnVisibility,
     },
   });
 

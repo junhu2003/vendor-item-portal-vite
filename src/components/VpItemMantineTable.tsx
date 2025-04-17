@@ -17,7 +17,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { DeptCategories, ExtItemResponse } from '../types/sditem/sdItemTypes'; 
-import { item, ExtItem, SendItemHistory, Store, Users } from '../types/vpadmin/vpAdminTypes';
+import { item, ExtItem, SendItemHistory, Store, Users, MantineTableColumnVisibility } from '../types/vpadmin/vpAdminTypes';
 import {
   getDeptLabels, 
   getCategoryLabels, 
@@ -39,6 +39,8 @@ import {
   UpdateVpItems,
   DeleteVpItem, 
   GetLastSendItemHistory, 
+  GetMyTableColumnVisibilitySetting,
+  SetMyTableColumnVisibilitySetting,
 } from '../api/vp-item-api';
 import { useAuth } from '../context/AuthContext';
 import { handleKeyPress } from '../helper/help-functions';
@@ -53,6 +55,9 @@ const VpItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
     Record<string, string | undefined>
   >({});
 
+  const COLUMN_VISIBILITY_KEY = 'VpItemMantineTable';
+  const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({});
+  
   //const [toast, setToast] = useState<React.ReactElement | null>(null);
   const [lastSendItemHistory, setLastSendItemHistory] = useState<SendItemHistory | null>(null);
   //const [currentToken, setCurrentToken] = useState('');
@@ -117,6 +122,19 @@ const VpItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
     setLastSendItemHistory(res);
   }
 
+  // Save to db table on visibility change
+  const handleVisibilityChange = async (visibility: Record<string, boolean>) => {
+    setColumnVisibility(visibility);
+
+    const setting: MantineTableColumnVisibility = {      
+      UserID: loginUser?.UserID ?? '',
+      MaintineTableName: COLUMN_VISIBILITY_KEY,
+      ColumnVisibilityValue: JSON.stringify(visibility),
+    };
+
+    await SetMyTableColumnVisibilitySetting(setting);
+  };
+  
   const queryClient = useQueryClient();
   useEffect(() => {
     
@@ -155,8 +173,16 @@ const VpItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
     }
     
     fetchData();
+
+    const fetchColumnVisibility = async () => {
+      const setting = await GetMyTableColumnVisibilitySetting(loginUser?.UserID ?? '', COLUMN_VISIBILITY_KEY);
+      setColumnVisibility(setting && setting.ColumnVisibilityValue ? JSON.parse(setting.ColumnVisibilityValue) : {});
+    };
+
+    fetchColumnVisibility();
+
     queryClient.invalidateQueries({ queryKey: ['items'] });
-  }, [selectedStore]);
+  }, [selectedStore, loginUser?.UserID]);
 
   //call CREATE hook
   const { mutateAsync: createItem, isPending: isCreatingItem } =
@@ -929,12 +955,20 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
       >
         Create New item
       </Button>
-    ), 
+    ),
+    onColumnVisibilityChange: (updaterOrValue) => {
+      const newVisibility =
+        typeof updaterOrValue === 'function'
+          ? updaterOrValue(columnVisibility)
+          : updaterOrValue;
+      handleVisibilityChange(newVisibility);
+    },
     state: {
       isLoading: isLoadingItems,
       isSaving: isCreatingItem || isUpdatingItem || isDeletingItem,
       showAlertBanner: isLoadingItemsError,
       showProgressBars: isFetchingItems,
+      columnVisibility,
     },
   });
 
