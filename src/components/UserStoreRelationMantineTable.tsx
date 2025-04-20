@@ -27,6 +27,7 @@ import {
   SetMyTableColumnVisibilitySetting,
   } from '../api/vp-item-api';  
   import { useAuth } from '../context/AuthContext';
+import { handleKeyPress } from '../helper/help-functions';
 
 const UserStoreRelationMantineTable: React.FC = () => {
   const { loginUser } = useAuth();
@@ -163,6 +164,7 @@ const columns = useMemo<MRT_ColumnDef<UserStoreRelation>[]>(
             ...editedUserStoreRelations,
             [row.id]: { ...(editedUserStoreRelations[row.id] ? editedUserStoreRelations[row.id] : row.original), UserID: value },
           }),
+        onKeyDown: (e) => handleKeyPress(e, 'ArrowRight'),
       }),
     },      
     {
@@ -178,6 +180,7 @@ const columns = useMemo<MRT_ColumnDef<UserStoreRelation>[]>(
             ...editedUserStoreRelations,
             [row.id]: { ...(editedUserStoreRelations[row.id] ? editedUserStoreRelations[row.id] : row.original), StoreID: value },
           }),
+        onKeyDown: (e) => handleKeyPress(e, 'ArrowRight'),
       }),
     },    
   ],

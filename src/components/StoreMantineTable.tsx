@@ -148,7 +148,7 @@ const columns = useMemo<MRT_ColumnDef<Store>[]>(
           });
         },
         onKeyDown: (e) => {
-          handleKeyPress(e);        
+          handleKeyPress(e, 'Enter');        
         },
       }),
     },      
@@ -175,7 +175,7 @@ const columns = useMemo<MRT_ColumnDef<Store>[]>(
           });
         },
         onKeyDown: (e) => {
-          handleKeyPress(e);        
+          handleKeyPress(e, 'Enter');
         },
       }),
     },    
@@ -200,7 +200,7 @@ const columns = useMemo<MRT_ColumnDef<Store>[]>(
           });
         },
         onKeyDown: (e) => {
-          handleKeyPress(e);        
+          handleKeyPress(e, 'Enter');
         },
       }),
     },      
