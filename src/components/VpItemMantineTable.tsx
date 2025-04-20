@@ -368,7 +368,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
             });
           },
           onKeyDown: (e) => {
-            handleKeyPress(e);
+            handleKeyPress(e, 'Enter');
           },
         }),
       },
@@ -396,7 +396,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
             });
           },
           onKeyDown: (e) => {
-            handleKeyPress(e);
+            handleKeyPress(e, 'Enter');
           },
         }),
       },      
@@ -423,7 +423,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
             });
           },
           onKeyDown: (e) => {
-            handleKeyPress(e);
+            handleKeyPress(e, 'Enter');
           },
         }),
       },
@@ -450,7 +450,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
             });
           },
           onKeyDown: (e) => {
-            handleKeyPress(e);
+            handleKeyPress(e, 'Enter');
           },
         }),
       },
@@ -477,7 +477,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
             });
           },
           onKeyDown: (e) => {
-            handleKeyPress(e);
+            handleKeyPress(e, 'Enter');
           },
         }),
       },      
@@ -504,7 +504,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
             });
           },
           onKeyDown: (e) => {
-            handleKeyPress(e);
+            handleKeyPress(e, 'Enter');
           },
         }),
       },
@@ -521,7 +521,9 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
               ...editedItems,
               [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), DepartmentID: value },
             }),
-          
+          onKeyDown: (e) => {
+            handleKeyPress(e, 'ArrowRight');
+          },
         }),          
       },      
       {
@@ -536,7 +538,10 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
             setEditedItems({
               ...editedItems,
               [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), CategoryID: value },
-            }),          
+            }),
+          onKeyDown: (e) => {
+            handleKeyPress(e, 'ArrowRight');
+          },
         }),          
       },
       {
@@ -551,7 +556,10 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
             setEditedItems({
               ...editedItems,
               [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), TaxCodeID: value },
-            }),          
+            }),
+          onKeyDown: (e) => {
+            handleKeyPress(e, 'ArrowRight');
+          },  
         }),          
       },
       {
@@ -566,7 +574,10 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
             setEditedItems({
               ...editedItems,
               [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), ItemType: value },
-            }),          
+            }),
+          onKeyDown: (e) => {
+            handleKeyPress(e, 'ArrowRight');
+          },
         }),
       },
       {
@@ -581,7 +592,10 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
             setEditedItems({
               ...editedItems,
               [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), STS: value },
-            }),          
+            }),
+          onKeyDown: (e) => {
+            handleKeyPress(e, 'ArrowRight');
+          },
         }),
       },
       {
@@ -598,7 +612,8 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                 ...editedItems,
                 [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), Brand: value },
               })
-            }}            
+            }}
+            onKeyDown={(e) => handleKeyPress(e, 'ArrowRight')}
             placeholder="Type or select"
             clearable            
           />          
@@ -621,6 +636,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(curItem), ReportCode: value.join(',')},
                 });                
               }}
+              onKeyDown={(e) => handleKeyPress(e, 'ArrowRight')}
               placeholder="Select options"              
               searchable
               clearable              
@@ -672,7 +688,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), ManualPrice: status },
                 });
               }}
-              onKeyDown={(e) => {handleKeyPress(e);}}
+              onKeyDown={(e) => {handleKeyPress(e, 'Enter')}}
               size='xs'
             />
           );
@@ -698,7 +714,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), Discountable: status },
                 });
               }}
-              onKeyDown={(e) => {handleKeyPress(e);}}
+              onKeyDown={(e) => {handleKeyPress(e, 'Enter')}}
               size='xs'
             />
           );
@@ -724,7 +740,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), Inventory: status },
                 });
               }}
-              onKeyDown={(e) => {handleKeyPress(e);}}
+              onKeyDown={(e) => {handleKeyPress(e, 'Enter')}}
               size='xs'
             />
           );
@@ -750,7 +766,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), AvailableOnWeb: status },
                 });
               }}
-              onKeyDown={(e) => {handleKeyPress(e);}}
+              onKeyDown={(e) => {handleKeyPress(e, 'Enter')}}
               size='xs'
             />
           );
@@ -776,7 +792,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), BtlDepositInPrice: status },
                 });
               }}
-              onKeyDown={(e) => {handleKeyPress(e);}}
+              onKeyDown={(e) => {handleKeyPress(e, 'Enter')}}
               size='xs'
             />
           );
@@ -802,7 +818,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), BtlDepositInCost: status },
                 });
               }}
-              onKeyDown={(e) => {handleKeyPress(e);}}
+              onKeyDown={(e) => {handleKeyPress(e, 'Enter')}}
               size='xs'
             />
           );
@@ -828,7 +844,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), EcoFeeInPrice: status },
                 });
               }}
-              onKeyDown={(e) => {handleKeyPress(e);}}
+              onKeyDown={(e) => {handleKeyPress(e, 'Enter')}}
               size='xs'
             />
           );
@@ -854,7 +870,7 @@ const openSendToSDConfirmModal = (row: MRT_Row<item>) =>
                   [row.id]: { ...(editedItems[row.id] ? editedItems[row.id] : row.original), EcoFeeInCost: status },
                 });
               }}
-              onKeyDown={(e) => {handleKeyPress(e);}}
+              onKeyDown={(e) => {handleKeyPress(e, 'Enter')}}
               size='xs'
             />
           );

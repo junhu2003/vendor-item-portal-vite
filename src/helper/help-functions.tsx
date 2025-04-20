@@ -22,8 +22,8 @@ export function isValidGuid(guid: string): boolean {
     return regex.test(guid);
 }
 
-export function handleKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
-    if (event.key === 'Enter') {
+export function handleKeyPress(event: React.KeyboardEvent<HTMLInputElement>, key: 'Enter' | 'ArrowRight') {
+    if (event.key === key) {
         event.preventDefault();
         const formElements = Array.from(
             document.querySelectorAll('input, button, select, textarea, [tabindex]:not([tabindex="-1"])')
@@ -37,10 +37,10 @@ export function handleKeyPress(event: React.KeyboardEvent<HTMLInputElement>) {
                 if (nextElement.tagName === 'INPUT' && (nextElement as HTMLInputElement).type === 'hidden') {
                     index++;
                 } else if (nextElement.tagName === 'BUTTON') {
-                    (nextElement as HTMLButtonElement).click();                 
+                    //(nextElement as HTMLButtonElement).click();                 
                     index++;                    
                 } else {
-                    (nextElement as HTMLInputElement).focus();
+                    (nextElement as HTMLInputElement).select();
                     break;
                 }
             }            
