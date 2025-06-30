@@ -4,14 +4,16 @@ import { Department,
     DeptCategories,      
     TaxCode, 
     Brand, 
-    ReportCode } from '../types/sditem/sdItemTypes';    
+    ReportCode,
+    PriceLevel } from '../types/sditem/sdItemTypes';    
 import { getDepartments, 
   getALLCategories, 
   getTaxCodes, 
   getBrands, 
   getReportCodes, 
   getItemTypes,
-  getItemStatuses } from '../api/sd-item-api';
+  getItemStatuses,
+  GetPriceLevels } from '../api/sd-item-api';
 
 
 export async function getDeptLabels(publicToken: string): Promise<{label: string, value: string}[]> {
@@ -103,4 +105,16 @@ export async function getItemStatusLabels(): Promise<{label: string, value: stri
     });
 
     return list;    
+}
+
+export async function getPriceLevelLabels(publicToken: string): Promise<{label: string, value: string}[]> {
+    const levels: PriceLevel[] = await GetPriceLevels(publicToken);
+    const list = levels.map((level) => {
+        return {
+            label: level.PriceLevelName,
+            value: level.PriceLevel.toString()
+        }
+    });
+
+    return list;
 }

@@ -60,6 +60,10 @@ export type item = {
     CreateUserID?: string
 };
 
+export type itemExt = item & {
+    BrandID?: string | undefined,
+}
+
 export type SendItemHistory = {
     ID: number,
 	ExtItemID: number,

@@ -9,7 +9,7 @@ import { MainLayoutProps } from '../types/layouts/MainLayoutTypes';
   const MainLayout: React.FC<MainLayoutProps> = ({ changeSelectedStore, refreshStoreDropdown }) => {
   const { loginUser } = useAuth();
   const [isExpanded, setIsExpanded] = useState(true);
-  const [pageTitle, setPageTitle] = useState('Dashboard');
+  const [pageTitle, setPageTitle] = useState('Create New Items');
 
   const [stores, setStores] = useState<Store[]>([]);
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);

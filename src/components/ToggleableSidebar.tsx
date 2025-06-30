@@ -24,7 +24,12 @@ const ToggleableSidebar: React.FC<ToggleableSidebarProps> = ({
     { 
       path: '/dashboard', 
       icon: <HomeIcon className="w-5 h-5" />, 
-      label: 'Dashboard' 
+      label: 'Create New Items' 
+    },
+    { 
+      path: '/SDToItems', 
+      icon: <HomeIcon className="w-5 h-5" />, 
+      label: 'Modify Store Items' 
     },
     /*{ 
       path: '/profile', 

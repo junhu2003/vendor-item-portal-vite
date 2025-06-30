@@ -66,3 +66,42 @@ export type ExtItemResponse = {
     Status: string;
     SendDate: Date;
 }
+
+export type PriceLevel = {
+    PriceLevel: number,
+    PriceLevelName: string,
+    PriceLevelDesc: string,
+    UID: number,
+    PriceLevelSyncCode: string
+}
+
+export type ExtPriceLevel = {
+    PublicToken: string,
+    PriceLevel: PriceLevel
+}
+
+export type ItemPriceLevel = {
+    ItemID: number,
+    PriceLevel: number,
+    Price: number,
+    UID: number,
+    OmniPriceLevelID: number
+}
+
+export type ExtItemPriceLevel = {
+    PublicToken: string,
+    ItemPriceLevel: ItemPriceLevel
+}
+
+export type Barcode = {
+    Barcode: string,
+    ItemID: number,
+    UID: number,
+    Qty: number
+}
+
+export type PostBarcodeJson = {
+    PublicKey: string;
+    ItemID: number,
+    BarcodeString: string
+}
