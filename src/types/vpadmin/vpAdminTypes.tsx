@@ -52,7 +52,7 @@ export type item = {
     BtlDepositInCost?: boolean,
     EcoFeeInPrice?: boolean,
     EcoFeeInCost?: boolean,
-    SdItemID: string | number,
+    SdItemID?: string | number,
     LastAction?: string,
     LastStatus?: string,
     LastSendDate?: Date,

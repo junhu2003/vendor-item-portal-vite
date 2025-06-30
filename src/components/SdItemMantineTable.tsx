@@ -4,8 +4,7 @@ import {
   // createRow,
   type MRT_ColumnDef,
   type MRT_Row,
-  type MRT_Cell,
-  type MRT_TableOptions,
+  type MRT_Cell,  
   useMantineReactTable,
 } from 'mantine-react-table';
 import { ActionIcon, 
@@ -33,7 +32,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 import { Barcode, DeptCategories, PostBarcodeJson, ItemPriceLevel, ExtItemPriceLevel } from '../types/sditem/sdItemTypes'; 
-import { ExtItem, SendItemHistory, Store, Users, MantineTableColumnVisibility, itemExt } from '../types/vpadmin/vpAdminTypes';
+import { ExtItem, Store, MantineTableColumnVisibility, itemExt } from '../types/vpadmin/vpAdminTypes';
 import {
   getDeptLabels, 
   getCategoryLabels,
@@ -57,9 +56,6 @@ import {
   DeleteItemPriceLevel,  
 } from '../api/sd-item-api';
 import { 
-  CreateVpItems,  
-  DeleteVpItem, 
-  GetLastSendItemHistory, 
   GetMyTableColumnVisibilitySetting,
   SetMyTableColumnVisibilitySetting,
 } from '../api/vp-item-api';
@@ -199,10 +195,7 @@ const SdItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
 
     queryClient.invalidateQueries({ queryKey: ['items'] });
   }, [selectedStore, loginUser?.UserID]);
-
-  //call CREATE hook
-  const { mutateAsync: createItem, isPending: isCreatingItem } =
-    useCreateItem(loginUser);
+  
   //call READ hook
   const {
     data: fetchedItems = [],
@@ -213,26 +206,7 @@ const SdItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
   } = useGetItems(selectedStore, itemName, itemNumber);
   //call UPDATE hook
   const { mutateAsync: updateItems, isPending: isUpdatingItem } =
-    useUpdateItems(selectedStore);
-  //call DELETE hook
-  const { mutateAsync: deleteItem, isPending: isDeletingItem } =
-    useDeleteItem();
-
-  //CREATE action
-  const handleCreateItem: MRT_TableOptions<itemExt>['onCreatingRowSave'] = async ({
-    row,
-    values,
-    exitCreatingMode,
-  }) => {
-    const newValidationErrors = validateItem(values);
-    if (Object.values(newValidationErrors).some((error) => !!error)) {
-      setValidationErrors(newValidationErrors);
-      return;
-    }
-    setValidationErrors({});
-    await createItem([editedItems[row.id]]);
-    exitCreatingMode();
-  };
+    useUpdateItems(selectedStore);  
 
   //UPDATE action
   const handleSaveItems = async () => {
@@ -445,7 +419,7 @@ const SdItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
         ItemPriceLevel: newValue
       };
       var result = await CreateItemPriceLevel(created);
-      if (result && result.name === 'Error') {
+      if (result && result['name'] === 'Error') {
         setErrorMsg('Error when creating Price Level. Please check the values and try again.');
         return;
       } else {
@@ -1158,8 +1132,7 @@ const SdItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
     mantineTableProps: {
       className: 'custom-table',
     },
-    onCreatingRowCancel: () => setValidationErrors({}),
-    onCreatingRowSave: handleCreateItem,
+    onCreatingRowCancel: () => setValidationErrors({}),    
     renderRowActions: ({ row }) => (
       <div className='flex items-centers space-x-1' style={{ width: '200px' }}>        
         <Tooltip label="Add Price Level">
@@ -1223,7 +1196,7 @@ const SdItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
     },
     state: {
       isLoading: isLoadingItems,
-      isSaving: isCreatingItem || isUpdatingItem || isDeletingItem,
+      isSaving: isUpdatingItem,
       showAlertBanner: isLoadingItemsError,
       showProgressBars: isFetchingItems,
       columnVisibility,
@@ -1239,66 +1212,6 @@ const SdItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
     </div>    
   );
 };
-
-//CREATE hook (post new item to api)
-function useCreateItem(loginUser: Users | null) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (items: itemExt[]) => {
-      //send api CREATE request here
-      const newItems = items.map((t) => ({
-        ItemID: 0, //t.ItemID,
-        //DepartmentID: Number(t.DepartmentID),
-        CategoryID: Number(t.CategoryID),
-        ItemName: t.ItemName,
-        ItemDesc: t.ItemDesc,
-        ItemNumber: t.ItemNumber,
-        TaxCodeID: Number(t.TaxCodeID),
-        UnitPrice: t.UnitPrice,
-        UnitCost: t.UnitCost,
-        STS: t.STS,
-        ItemType: t.ItemType,
-        Brand: t.Brand,
-        Barcode: t.Barcode,
-        ReportCode: t.ReportCode,
-        ImageFileName: t.ImageFileName,
-        ImageFileData: t.ImageFileData,
-        ManualPrice: typeof(t.ManualPrice) === 'boolean' ? t.ManualPrice : false,
-        Discountable: typeof(t.Discountable) === 'boolean' ? t.Discountable : false,
-        Inventory: typeof(t.Inventory) === 'boolean' ? t.Inventory : false,
-        AvailableOnWeb: typeof(t.AvailableOnWeb) === 'boolean' ? t.AvailableOnWeb : false,
-        BtlDepositInPrice: typeof(t.BtlDepositInPrice) === 'boolean' ? t.BtlDepositInPrice : false,
-        BtlDepositInCost: typeof(t.BtlDepositInCost) === 'boolean' ? t.BtlDepositInCost : false,
-        EcoFeeInPrice: typeof(t.EcoFeeInPrice) === 'boolean' ? t.EcoFeeInPrice : false,
-        EcoFeeInCost: typeof(t.EcoFeeInCost) === 'boolean' ? t.EcoFeeInCost : false,
-        //SdItemID: t.SdItemID,
-        //LastAction: t.LastAction,
-        //LastSendDate: t.LastSendDate,
-        CreatedDate: new Date(), // t.CreatedDate,
-        CreateUserID: loginUser?.UserID, //t.CreateUserID
-      }));
-      
-      const result = await CreateVpItems(newItems);
-      return result;          
-      
-    },
-    //client side optimistic update
-    onMutate: (newItemInfo: itemExt[]) => {
-      queryClient.setQueryData(
-        ['items'],
-        (prevItems: any) =>
-          [
-            ...prevItems,
-            {
-              ...newItemInfo,
-              id: (Math.random() + 1).toString(36).substring(7),
-            },
-          ] as itemExt[],
-      );
-    },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['items'] }), //refetch Items after mutation, disabled for demo
-  });
-}
 
 //READ hook (get items from api)
 function useGetItems(store: Store | null, itemName: string, itemNumber: string) {
@@ -1407,40 +1320,8 @@ function useUpdateItems(selectedStore: Store | null) {
   });
 }
 
-//DELETE hook (delete item in api)
-function useDeleteItem() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (itemId: string) => {
-      //send api delete request here      
-      return await new Promise(async (resolve) => {        
-        const result = await DeleteVpItem(Number(itemId));
-        resolve(result);          
-      });    
-    },
-    //client side optimistic update
-    onMutate: (itemId: string) => {
-      queryClient.setQueryData(
-        ['items'],
-        (prevItems: any) =>
-          prevItems?.filter((item: itemExt) => item.ItemID !== Number(itemId)),
-      );
-    },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ['items'] }), //refetch Items after mutation, disabled for demo
-  });
-}
-
 const validateRequired = (value: string | undefined) => !!value?.length;
 const validateBarcodeDuplication = async (publicKey: string, barcode: string) => await barcodesDuplicationCheck(publicKey, barcode);
 const validateItemNumberDuplication = async (publickey: string, itemNumber: string) => await itemNumberDuplicationCheck(publickey, itemNumber);
-
-function validateItem(item: itemExt) {
-  return {
-    name: !validateRequired(item.ItemName)
-      ? 'Item Name is Required'
-      : '',    
-    //email: !validateEmail(item.email) ? 'Incorrect Email Format' : '',
-  };
-}
 
 export default SdItemMantineTable;
