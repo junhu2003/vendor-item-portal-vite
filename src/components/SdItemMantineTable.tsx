@@ -67,8 +67,6 @@ import { ExtItemResponse } from '../types/sditem/sdItemTypes';
 import { item } from '../types/vpadmin/vpAdminTypes';
 import { useAuth } from '../context/AuthContext';
 import { handleKeyPress } from '../helper/help-functions';
-//import Toast from './Toast';
-import { showNotification } from '@mantine/notifications';
 
 const SdItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedStore}) => {
   const { loginUser } = useAuth();  
@@ -79,11 +77,7 @@ const SdItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
 
   const COLUMN_VISIBILITY_KEY = 'VpItemMantineTable';
   const [columnVisibility, setColumnVisibility] = useState<Record<string, boolean>>({});
-  
-  //const [toast, setToast] = useState<React.ReactElement | null>(null);
-  const [lastSendItemHistory, setLastSendItemHistory] = useState<SendItemHistory | null>(null);
-  //const [currentToken, setCurrentToken] = useState('');
-
+    
   //keep track of rows that have been edited  
   const [editedItems, setEditedItems] = useState<Record<string, itemExt>>({});  
 
@@ -143,11 +137,6 @@ const SdItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
   const openFileExplorer = (rowId: string) => {    
     fileInputRefs.current[rowId]?.click();
   };
-
-  const getLastSendingHistory = async (itemID: number) => {
-    const res = await GetLastSendItemHistory(itemID);
-    setLastSendItemHistory(res);
-  }
 
   // Save to db table on visibility change
   const handleVisibilityChange = async (visibility: Record<string, boolean>) => {
@@ -251,21 +240,6 @@ const SdItemMantineTable: React.FC<{selectedStore: Store | null}> = ({selectedSt
     await updateItems(Object.values(editedItems));
     setEditedItems({});
   };  
-
-  //DELETE action
-  const openDeleteConfirmModal = (row: MRT_Row<itemExt>) =>
-    modals.openConfirmModal({
-      title: 'DELETE item',
-      children: (
-        <Text>
-          Are you sure you want to delete {row.original.ItemName}{' '}?
-           This action cannot be undone.
-        </Text>
-      ),
-      labels: { confirm: 'Delete', cancel: 'Cancel' },
-      confirmProps: { color: 'red' },
-      onConfirm: () => deleteItem(row.original.ItemID.toString()),
-    });
 
   // open Add Item Barcode Dialog
   const openAddItemBarcodeDialog = (row: MRT_Row<itemExt>) => {
