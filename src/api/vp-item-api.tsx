@@ -10,6 +10,7 @@ import { Users,
 import bcryptjs from 'bcryptjs';
 
 const apiBaseUrl = import.meta.env.VITE_API_URL;
+const subscriptionKey = import.meta.env.VITE_API_SUBSCRIPTION_KEY;
 
 export async function GetAllVpUsers(): Promise<Users[]> {
     var reqUrl = apiBaseUrl + '/api/VpItem/v1/GetAllVpUsers'    
@@ -19,6 +20,7 @@ export async function GetAllVpUsers(): Promise<Users[]> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     if (response.ok && response.status === 200) {
@@ -36,6 +38,7 @@ export async function GetMyVpUsers(myUserID: string | null): Promise<Users[]> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     if (response.ok && response.status === 200) {
@@ -53,6 +56,7 @@ export async function GetVpUserByEmail(email: string): Promise<Users | null> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     if (response.ok && response.status === 200) {
@@ -70,6 +74,7 @@ export async function UpdateVpUser(user: Users[]): Promise<boolean> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }, 
         body: JSON.stringify(user)});
@@ -97,6 +102,7 @@ export async function CreateVpUser(user: Users): Promise<boolean> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }, 
         body: JSON.stringify(newUser)});
@@ -115,6 +121,7 @@ export async function DeleteVpUser(userID: string): Promise<number> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     if (response.ok && response.status === 200) {
@@ -132,6 +139,7 @@ export async function GetAllStores(): Promise<Store[]> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     if (response.ok && response.status === 200) {
@@ -149,6 +157,7 @@ export async function GetUserStores(userID: string): Promise<Store[]> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     if (response.ok && response.status === 200) {
@@ -166,6 +175,7 @@ export async function UpdateStores(stores: Store[]): Promise<boolean> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }, 
         body: JSON.stringify(stores)});
@@ -184,6 +194,7 @@ export async function CreateStore(storeCreator: StoreCreation): Promise<boolean>
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }, 
         body: JSON.stringify(storeCreator)});
@@ -202,6 +213,7 @@ export async function DeleteStore(storeID: number): Promise<number> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     if (response.ok && response.status === 200) {
@@ -219,6 +231,7 @@ export async function GetAllUserStoreRelations(): Promise<UserStoreRelation[]> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     if (response.ok && response.status === 200) {
@@ -236,6 +249,7 @@ export async function GetMyUserStoreRelations(userID: string): Promise<UserStore
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     if (response.ok && response.status === 200) {
@@ -253,6 +267,7 @@ export async function UpdateUserStoreRelations(relations: UserStoreRelation[]): 
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }, 
         body: JSON.stringify(relations)});
@@ -271,6 +286,7 @@ export async function CreateUserStoreRelation(relation: UserStoreRelation): Prom
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }, 
         body: JSON.stringify(relation)});
@@ -289,6 +305,7 @@ export async function DeleteUserStoreRelation(relationID: number): Promise<numbe
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     if (response.ok && response.status === 200) {
@@ -306,6 +323,7 @@ export async function GetAllVpUserLevels(): Promise<UserLevel[]> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     if (response.ok && response.status === 200) {
@@ -323,6 +341,7 @@ export async function GetVpItems(publicKey: string, userIds: string): Promise<it
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     if (response.ok && response.status === 200) {
@@ -340,6 +359,7 @@ export async function CreateVpItems(items: item[]): Promise<boolean> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }, 
         body: JSON.stringify(items)});
@@ -376,6 +396,7 @@ export async function DeleteVpItem(itemID: number): Promise<boolean> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     if (response.ok && response.status === 200) {
@@ -393,6 +414,7 @@ export async function GetLastSendItemHistory(itemID: number): Promise<SendItemHi
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     if (response.ok && response.status === 200) {
@@ -410,6 +432,7 @@ export async function CreateSendItemHistory(sendItemHistory: SendItemHistory[]):
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }, 
         body: JSON.stringify(sendItemHistory)});
@@ -428,6 +451,7 @@ export async function UpdateItemByResponse(res: ExtItemResponse): Promise<boolea
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }, 
         body: JSON.stringify(res)});
@@ -446,6 +470,7 @@ export async function GetMyTableColumnVisibilitySetting(myUserID: string, tableN
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     if (response.ok && response.status === 200) {
@@ -463,6 +488,7 @@ export async function SetMyTableColumnVisibilitySetting(setting: MantineTableCol
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }, 
         body: JSON.stringify(setting)});

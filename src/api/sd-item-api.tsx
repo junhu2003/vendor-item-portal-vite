@@ -15,6 +15,7 @@ import { itemExt } from "../types/vpadmin/vpAdminTypes";
 import { ExtItem } from "../types/vpadmin/vpAdminTypes";
 
 const apiBaseUrl = import.meta.env.VITE_API_URL;
+const subscriptionKey = import.meta.env.VITE_API_SUBSCRIPTION_KEY;
 
 export async function getDepartments(publicToken: string): Promise<Department[]> {    
     const reqUrl = apiBaseUrl  + '/api/SdItem/v1/GetDepartments?publicToken=' + publicToken;
@@ -24,6 +25,7 @@ export async function getDepartments(publicToken: string): Promise<Department[]>
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     return response.json();
@@ -37,6 +39,7 @@ export async function getALLCategories(publicToken: string): Promise<Category[]>
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     return response.json();
@@ -50,6 +53,7 @@ export async function getCategoriesByDept(publicToken: string, departmentID: str
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     return response.json();
@@ -63,6 +67,7 @@ export async function getTaxCodes(publicToken: string): Promise<TaxCode[]> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     return response.json();
@@ -76,6 +81,7 @@ export async function getBrands(publicToken: string): Promise<Brand[]> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     return response.json();
@@ -89,6 +95,7 @@ export async function getReportCodes(publicToken: string): Promise<ReportCode[]>
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     return response.json();
@@ -102,6 +109,7 @@ export async function barcodesDuplicationCheck(publicToken: string, barcodeStrin
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     const text = await response.text();
@@ -116,6 +124,7 @@ export async function getItemBarcodes(publicToken: string, itemID: number): Prom
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     return response.json();
@@ -129,6 +138,7 @@ export async function postItemBarcode(postBarcodeJson: PostBarcodeJson): Promise
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }, 
         body: JSON.stringify(postBarcodeJson)});    
@@ -144,6 +154,7 @@ export async function itemNumberDuplicationCheck(publicToken: string, itemNumber
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     const text = await response.text();
@@ -158,6 +169,7 @@ export async function getItemTypes(): Promise<string[]> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     return response.json();
@@ -171,6 +183,7 @@ export async function getItemStatuses(): Promise<string[]> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     return response.json();
@@ -186,6 +199,7 @@ export async function searchItems(publicToken: string, itemName?: string, partNu
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     return response.json();
@@ -199,6 +213,7 @@ export async function GetPriceLevels(publicToken: string): Promise<PriceLevel[]>
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     return response.json();
@@ -212,6 +227,7 @@ export async function CreatePriceLevel(priceLevel: ExtPriceLevel): Promise<null>
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }, 
         body: JSON.stringify(priceLevel)});    
@@ -226,6 +242,7 @@ export async function GetItemPriceLevels(publicToken: string, itemID: number): P
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});
     return response.json();
@@ -239,6 +256,7 @@ export async function CreateItemPriceLevel(itemPriceLevel: ExtItemPriceLevel): P
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }, 
         body: JSON.stringify(itemPriceLevel)});    
@@ -253,6 +271,7 @@ export async function UpdateItemPriceLevel(itemPriceLevel: ExtItemPriceLevel): P
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }, 
         body: JSON.stringify(itemPriceLevel)});    
@@ -267,6 +286,7 @@ export async function DeleteItemPriceLevel(itemPriceLevel: ExtItemPriceLevel): P
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }, 
         body: JSON.stringify(itemPriceLevel)});    
@@ -281,6 +301,7 @@ export async function postItems(extItems: ExtItem): Promise<ExtItemResponse[]> {
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }, 
         body: JSON.stringify(extItems)});    
@@ -295,6 +316,7 @@ export async function IsStoreExistByPublicToken(publicToken: string): Promise<bo
         mode: 'cors', 
         headers: {
             Accept: 'application/json',
+            'Ocp-Apim-Subscription-Key': subscriptionKey,
             'Content-Type': 'application/json',
         }});    
     const text = await response.text();
